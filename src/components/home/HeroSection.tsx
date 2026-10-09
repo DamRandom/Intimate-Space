@@ -19,7 +19,7 @@ export const HeroSection: React.FC = () => {
             <a href="#reservas" className="btn-zen-filled">
               Reservar sesión
             </a>
-            <a href="#experiencias" className="btn-zen">
+            <a href="/catalogo" className="btn-zen">
               Ver servicios
             </a>
           </div>

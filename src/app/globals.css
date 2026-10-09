@@ -599,24 +599,56 @@ a {
   color: var(--text-secondary);
 }
 
+.zen-story-img-mobile {
+  display: none;
+}
+
+.zen-story-img-desktop {
+  display: block;
+}
+
 .zen-story-pillars {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1.25rem;
   margin-top: 1rem;
-  padding-top: 2rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
 }
 
-.zen-pillar-item h4 {
-  font-size: 0.95rem;
-  color: var(--champagne);
-  margin-bottom: 0.35rem;
-  letter-spacing: 0.08em;
+.zen-pillar-item {
+  background: rgba(18, 24, 20, 0.4);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: all 0.25s ease;
 }
 
-.zen-pillar-item p {
-  font-size: 0.84rem;
+.zen-pillar-item:hover {
+  border-color: var(--champagne-border);
+  background: rgba(20, 28, 23, 0.65);
+}
+
+.zen-pillar-num {
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  color: var(--champagne);
+  letter-spacing: 0.12em;
+  opacity: 0.9;
+}
+
+.zen-pillar-title {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.zen-pillar-desc {
+  font-size: 0.82rem;
   line-height: 1.65;
   color: var(--text-muted);
 }
@@ -1200,6 +1232,69 @@ a {
 }
 
 /* ==========================================================================
+   Fixed Duration Info Bar (informative, not a selector)
+   ========================================================================== */
+.zen-fixed-duration-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.4rem;
+  margin-top: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  background: rgba(207, 183, 138, 0.07);
+  border: 1px solid rgba(207, 183, 138, 0.18);
+  border-radius: 10px;
+}
+
+.zen-fixed-duration-item,
+.zen-fixed-price-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.zen-fixed-icon {
+  color: var(--champagne);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.zen-fixed-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.zen-fixed-value {
+  font-size: 0.85rem;
+  color: var(--champagne-light);
+  font-weight: 500;
+}
+
+.zen-fixed-price {
+  font-size: 0.95rem;
+  color: var(--champagne);
+  font-weight: 600;
+}
+
+.zen-fixed-regular {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  margin-left: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .zen-fixed-duration-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.75rem 0.9rem;
+  }
+}
+
+/* ==========================================================================
    Live Concierge Summary Card
    ========================================================================== */
 .zen-booking-summary {
@@ -1258,6 +1353,22 @@ a {
   font-weight: 500;
 }
 
+.zen-booking-actions {
+  margin-top: 1.6rem;
+  text-align: center;
+}
+
+.zen-booking-submit-btn {
+  width: 100%;
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+}
+
 .zen-booking-discretion {
   text-align: center;
   margin-top: 1.2rem;
@@ -1269,9 +1380,202 @@ a {
   gap: 0.4rem;
 }
 
+/* ── Step-Based Concierge Form Structure ── */
+.zen-booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.zen-form-step {
+  background: rgba(14, 20, 16, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 1.35rem 1.4rem;
+  transition: border-color 0.25s ease;
+}
+
+.zen-form-step:focus-within {
+  border-color: rgba(207, 183, 138, 0.25);
+  background: rgba(14, 20, 16, 0.75);
+}
+
+.zen-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.zen-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(207, 183, 138, 0.14);
+  border: 1px solid var(--champagne-border);
+  color: var(--champagne);
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.zen-step-title {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+.zen-step-subtitle {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.zen-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+}
+
+.zen-form-field:last-child {
+  margin-bottom: 0;
+}
+
+.zen-label-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.zen-step-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+@media (max-width: 640px) {
+  .zen-step-row-2 {
+    grid-template-columns: 1fr;
+    gap: 0.95rem;
+  }
+}
+
+/* ── Segmented Control for Time Slots (Touch native) ── */
+.zen-timeslot-pills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.zen-slot-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 0.4rem;
+  background: rgba(10, 14, 12, 0.7);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  min-height: 54px;
+}
+
+.zen-slot-pill:hover {
+  border-color: var(--champagne-border);
+  background: rgba(14, 20, 16, 0.85);
+}
+
+.zen-slot-pill.is-selected {
+  border-color: var(--champagne);
+  background: rgba(207, 183, 138, 0.12);
+  box-shadow: 0 0 12px rgba(207, 183, 138, 0.08);
+}
+
+.zen-slot-icon {
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+  transition: color 0.2s ease;
+}
+
+.zen-slot-pill.is-selected .zen-slot-icon {
+  color: var(--champagne);
+}
+
+.zen-slot-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.zen-slot-pill.is-selected .zen-slot-name {
+  color: var(--champagne-light);
+}
+
+.zen-slot-hours {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ── Notes Toggleable Field ── */
+.zen-notes-toggle-box {
+  margin-top: 0.4rem;
+}
+
+.zen-notes-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--champagne);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  display: inline-block;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.zen-notes-toggle-btn:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.zen-notes-wrapper {
+  margin-top: 0.6rem;
+  animation: fadeIn 0.25s ease;
+}
+
+/* ── Success Box ── */
 .zen-success-box {
   text-align: center;
-  padding: 2rem 0;
+  padding: 2.5rem 1rem;
+}
+
+.zen-success-icon-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(207, 183, 138, 0.14);
+  border: 1px solid var(--champagne);
+  color: var(--champagne);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.4rem;
 }
 
 .zen-success-title {
@@ -1598,6 +1902,200 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
 }
 
 /* ==========================================================================
+   Footer Compact: Single-Strip Horizontal
+   ========================================================================== */
+.zen-footer-compact {
+  padding: 2.8rem 0 calc(2rem + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, var(--bg-main) 0%, #080c09 100%);
+  border-top: 1px solid rgba(207, 183, 138, 0.12);
+  position: relative;
+}
+
+/* Brand wrap: logo + tagline side-by-side */
+.zen-footer-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.zen-footer-logo-link {
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.zen-footer-tagline {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* Horizontal nav row */
+.zen-footer-nav-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0;
+  margin-bottom: 1.4rem;
+}
+
+.zen-footer-nav-link {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.zen-footer-nav-link:hover {
+  color: var(--champagne);
+}
+
+.zen-footer-nav-sep {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+/* Channels row: pills */
+.zen-footer-channels-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.zen-footer-channel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem;
+  background: rgba(18, 24, 20, 0.6);
+  border: 1px solid rgba(207, 183, 138, 0.18);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.22s ease;
+  backdrop-filter: blur(6px);
+}
+
+.zen-footer-channel-pill:hover {
+  border-color: var(--champagne);
+  color: var(--champagne);
+  background: rgba(207, 183, 138, 0.08);
+}
+
+.zen-footer-info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.zen-footer-arrow-icon {
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
+.zen-footer-channel-pill:hover .zen-footer-arrow-icon {
+  opacity: 1;
+}
+
+/* Compact divider */
+.zen-footer-compact-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(207, 183, 138, 0.15) 50%, transparent 100%);
+  margin-bottom: 1.4rem;
+}
+
+/* Bottom row: copyright + backtotop */
+.zen-footer-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.zen-footer-compact-copy {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.zen-footer-backtotop-btn {
+  background: transparent;
+  border: 1px solid rgba(207, 183, 138, 0.18);
+  color: var(--champagne);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-sans);
+  transition: all 0.22s ease;
+  flex-shrink: 0;
+}
+
+.zen-footer-backtotop-btn:hover {
+  background: rgba(207, 183, 138, 0.1);
+  border-color: var(--champagne);
+  transform: translateY(-2px);
+}
+
+/* Mobile responsive for compact footer */
+@media (max-width: 640px) {
+  .zen-footer-compact {
+    padding: 2rem 0 calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .zen-footer-brand-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .zen-footer-nav-row {
+    gap: 0.2rem 0;
+    margin-bottom: 1.1rem;
+  }
+
+  .zen-footer-channels-row {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .zen-footer-channel-pill,
+  .zen-footer-info-pill {
+    font-size: 0.74rem;
+    padding: 0.45rem 0.8rem;
+  }
+
+  .zen-footer-bottom-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+/* ==========================================================================
    Floating WhatsApp: Minimal Pill
    ========================================================================== */
 .zen-floating-wa {
@@ -1737,37 +2235,61 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
     letter-spacing: 0.2em;
   }
 
-  /* Story / Philosophy */
+  /* Story / Philosophy Editorial Mobile Flow */
   .zen-story-grid {
-    gap: 2.5rem;
+    gap: 1.8rem;
+  }
+  .zen-story-header {
+    margin-bottom: 0.5rem;
   }
   .zen-story-lead {
     font-size: 1.05rem;
-    line-height: 1.7;
+    line-height: 1.65;
+  }
+  .zen-story-img-mobile {
+    display: block;
+    width: 100%;
+    max-height: 250px;
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 1.35rem 0 1.5rem;
+    border: 1px solid rgba(207, 183, 138, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  }
+  .zen-story-img-mobile .zen-story-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+  .zen-story-img-desktop {
+    display: none;
   }
   .zen-story-body {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     line-height: 1.75;
   }
   .zen-story-pillars {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
     margin-top: 1.5rem;
+    padding-top: 1.25rem;
   }
   .zen-pillar-item {
-    background: rgba(18, 24, 20, 0.45);
+    background: rgba(18, 24, 20, 0.5);
     border: 1px solid var(--border-light);
     border-radius: 10px;
-    padding: 1.1rem 1rem;
+    padding: 0.95rem 0.85rem;
+    gap: 0.25rem;
   }
-  .zen-story-img-wrapper {
-    max-height: 380px;
-    border-radius: 12px;
-    overflow: hidden;
+  .zen-pillar-num {
+    font-size: 0.72rem;
   }
-  .zen-story-img {
-    height: 100%;
-    object-fit: cover;
+  .zen-pillar-title {
+    font-size: 0.88rem;
+  }
+  .zen-pillar-desc {
+    font-size: 0.76rem;
+    line-height: 1.5;
   }
 
   /* Prevent zoom on iOS inputs (must be >= 16px) */
@@ -1807,6 +2329,59 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
   .zen-summary-details {
     gap: 0.8rem;
     font-size: 0.8rem;
+  }
+
+  /* Step blocks: tighter on mobile */
+  .zen-form-step {
+    padding: 1.1rem 1rem;
+    border-radius: 12px;
+  }
+
+  .zen-step-header {
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .zen-step-title {
+    font-size: 0.86rem;
+  }
+
+  /* Time slot pills: full width on mobile for easy tap */
+  .zen-timeslot-pills {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .zen-slot-pill {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0.85rem 1rem;
+    min-height: 50px;
+    gap: 0.75rem;
+    border-radius: 10px;
+  }
+
+  .zen-slot-icon {
+    margin-bottom: 0;
+  }
+
+  .zen-slot-hours {
+    margin-left: auto;
+    font-size: 0.7rem;
+  }
+
+  /* Booking actions */
+  .zen-booking-actions {
+    margin-top: 1.2rem;
+  }
+
+  .zen-booking-submit-btn {
+    min-height: 54px;
+    font-size: 0.9rem;
+  }
+
+  .zen-booking-form {
+    gap: 1rem;
   }
 
   /* Floating WhatsApp button mobile ergonomics */
@@ -2296,127 +2871,313 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
   filter: brightness(0.96) saturate(0.95);
 }
 
-.team-card-overlay {
+.team-card-badge {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2rem 1.4rem 1rem;
-  background: linear-gradient(to top, rgba(12,16,14,0.85) 0%, transparent 100%);
+  top: 10px;
+  right: 10px;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  color: var(--champagne);
+  background: rgba(12, 16, 14, 0.8);
+  border: 1px solid var(--champagne-border);
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.55rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-weight: 500;
+  z-index: 2;
 }
 
 /* ── Body ── */
 .team-card-body {
-  padding: 1.2rem 1.4rem 1.4rem;
+  padding: 1.15rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .team-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .team-card-name {
-  font-size: 1.1rem;
+  font-size: 1.12rem;
   font-weight: 400;
   line-height: 1.2;
 }
 
-.team-card-exp {
-  font-size: 0.7rem;
-  color: var(--champagne);
-  letter-spacing: 0.08em;
-  white-space: nowrap;
-  border: 1px solid var(--champagne-border);
-  border-radius: var(--radius-pill);
-  padding: 0.2rem 0.6rem;
-}
-
 .team-card-specialty {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
-  line-height: 1.5;
-  padding-bottom: 0.6rem;
+  line-height: 1.45;
+  padding-bottom: 0.55rem;
   border-bottom: 1px solid var(--border-light);
 }
 
-/* ── Expandable detail ── */
-.team-card-detail {
-  animation: fadeIn 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.team-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem 0.8rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 0.85rem 1rem;
-}
-
-.team-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.team-info-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
+.team-card-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--champagne);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.35rem 0 0;
+  margin-top: auto;
+  transition: all 0.2s ease;
+  font-family: var(--font-sans);
+  opacity: 0.85;
+}
+
+.team-card:hover .team-card-action-btn,
+.team-card--active .team-card-action-btn {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* ── Comparison Bottom Sheet Modal ── */
+.team-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: zenOverlayFade 0.25s ease forwards;
+}
+
+.team-modal-sheet {
+  background: #0d120f;
+  border: 1px solid rgba(207, 183, 138, 0.25);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 1.4rem 1.4rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -15px 45px rgba(0, 0, 0, 0.85);
+  animation: zenSheetSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes zenSheetSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.team-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.team-modal-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--champagne);
   font-weight: 500;
 }
 
-.team-info-value {
-  font-size: 0.82rem;
+.team-modal-close {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.team-modal-close:hover {
   color: var(--champagne);
+  border-color: var(--champagne);
+  background: rgba(207, 183, 138, 0.1);
+}
+
+/* Quick comparison chips inside modal */
+.team-compare-bar {
+  display: flex;
+  gap: 0.45rem;
+  overflow-x: auto;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  scrollbar-width: none;
+}
+
+.team-compare-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.team-compare-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  background: rgba(14, 20, 16, 0.7);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-pill);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.team-compare-chip.is-active {
+  background: rgba(207, 183, 138, 0.15);
+  border-color: var(--champagne);
+  color: var(--champagne-light);
+  font-weight: 500;
+}
+
+.team-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.team-modal-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.team-modal-avatar {
+  position: relative;
+  width: 90px;
+  height: 110px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--champagne-border);
+  flex-shrink: 0;
+}
+
+.team-modal-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.team-modal-exp-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(12, 16, 14, 0.88);
+  font-size: 0.58rem;
+  color: var(--champagne);
+  text-align: center;
+  padding: 0.15rem 0;
+  letter-spacing: 0.04em;
+}
+
+.team-modal-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.team-modal-name {
+  font-size: 1.4rem;
+  color: var(--text-primary);
   font-weight: 400;
 }
 
-.team-card-bio {
+.team-modal-specialty {
+  font-size: 0.84rem;
+  color: var(--champagne);
+}
+
+.team-modal-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.75rem 0.6rem;
+}
+
+@media (max-width: 480px) {
+  .team-modal-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem 0.5rem;
+  }
+}
+
+.team-metric-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.team-metric-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.team-metric-value {
   font-size: 0.82rem;
-  line-height: 1.75;
+  color: var(--champagne-light);
+  font-weight: 500;
+}
+
+.team-modal-bio-box {
+  background: rgba(14, 20, 16, 0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 0.95rem 1rem;
+}
+
+.team-modal-bio-title {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  margin-bottom: 0.35rem;
+}
+
+.team-modal-bio-text {
+  font-size: 0.84rem;
+  line-height: 1.65;
   color: var(--text-secondary);
 }
 
-/* ── Toggle button ── */
-.team-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  padding: 0;
-  margin-top: auto;
-  transition: var(--transition);
-  font-family: var(--font-sans);
-}
-
-.team-toggle-btn:hover,
-.team-card--active .team-toggle-btn {
-  color: var(--champagne);
+.team-modal-actions {
+  margin-top: 0.5rem;
 }
 
 /* ── Footer note ── */
 .team-footer-note {
-  margin-top: 4rem;
+  margin-top: 3.5rem;
   text-align: center;
-  padding: 2rem;
+  padding: 1.5rem 1.2rem;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-card);
   max-width: 620px;
@@ -2425,9 +3186,9 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
 }
 
 .team-footer-note p {
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
-  line-height: 1.75;
+  line-height: 1.65;
 }
 
 .team-footer-note strong {
@@ -2440,39 +3201,78 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
   .team-grid {
     grid-template-columns: repeat(2, 1fr);
     max-width: 100%;
-    gap: 1.5rem;
+    gap: 1.4rem;
   }
 
   .team-card-media {
-    height: 360px;
+    height: 320px;
   }
 }
 
 @media (max-width: 768px) {
   .team-grid {
-    margin-top: 3rem;
-  }
-  .team-card-media {
-    height: 340px;
+    margin-top: 2.8rem;
   }
 }
 
+/* Mobile 2x2 Grid: see all 4 therapists at once! */
 @media (max-width: 640px) {
   .team-grid {
-    grid-template-columns: 1fr;
-    max-width: 380px;
-    margin-left: auto;
-    margin-right: auto;
-    gap: 1.6rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    max-width: 100%;
+    margin-top: 2rem;
   }
 
   .team-card-media {
-    height: 400px;
+    height: 195px;
   }
 
-  .team-info-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+  .team-card-badge {
+    top: 6px;
+    right: 6px;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .team-card-body {
+    padding: 0.75rem 0.7rem 0.85rem;
+    gap: 0.35rem;
+  }
+
+  .team-card-name {
+    font-size: 0.95rem;
+  }
+
+  .team-card-specialty {
+    font-size: 0.7rem;
+    line-height: 1.35;
+    padding-bottom: 0.4rem;
+  }
+
+  .team-card-action-btn {
+    font-size: 0.65rem;
+    padding-top: 0.25rem;
+  }
+
+  .team-footer-note {
+    margin-top: 2rem;
+    padding: 1.1rem 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .team-grid {
+    gap: 0.5rem;
+  }
+  .team-card-media {
+    height: 170px;
+  }
+  .team-card-name {
+    font-size: 0.88rem;
+  }
+  .team-card-specialty {
+    font-size: 0.66rem;
   }
 }
 

@@ -27,7 +27,7 @@ interface BookingFormProps {
 interface TimeSlotOption {
   value: string;
   label: string;
-  sub: string;
+  hours: string;
   icon: LucideIcon;
 }
 
@@ -35,19 +35,19 @@ const TIME_SLOT_OPTIONS: TimeSlotOption[] = [
   {
     value: 'Mañana (10:00 a 14:00)',
     label: 'Mañana',
-    sub: '10:00 a 14:00',
+    hours: '10:00 - 14:00',
     icon: Sun
   },
   {
     value: 'Tarde (15:00 a 19:00)',
     label: 'Tarde',
-    sub: '15:00 a 19:00',
+    hours: '15:00 - 19:00',
     icon: Sunset
   },
   {
     value: 'Noche (19:00 a 22:00)',
     label: 'Noche',
-    sub: '19:00 a 22:00',
+    hours: '19:00 - 22:00',
     icon: Moon
   }
 ];
@@ -65,26 +65,21 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isServiceOpen, setIsServiceOpen] = useState(false);
-  const [isTimeSlotOpen, setIsTimeSlotOpen] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
   const serviceSelectRef = useRef<HTMLDivElement>(null);
-  const timeSelectRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns on outside click or escape
+  // Close dropdown on outside click or escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (serviceSelectRef.current && !serviceSelectRef.current.contains(event.target as Node)) {
         setIsServiceOpen(false);
-      }
-      if (timeSelectRef.current && !timeSelectRef.current.contains(event.target as Node)) {
-        setIsTimeSlotOpen(false);
       }
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsServiceOpen(false);
-        setIsTimeSlotOpen(false);
       }
     };
 
@@ -116,30 +111,21 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
   };
 
   const handleSelectService = (service: Service) => {
-    setFormData((prev) => {
-      // Check if current duration exists in new service; if not, pick the first
-      const hasDuration = service.prices.some((p) => p.duration === prev.duration);
-      return {
-        ...prev,
-        serviceId: service.id,
-        duration: hasDuration ? prev.duration : service.prices[0].duration
-      };
-    });
+    setFormData((prev) => ({
+      ...prev,
+      serviceId: service.id,
+      // Fixed duration based on the service
+      duration: service.prices[0].duration
+    }));
     setIsServiceOpen(false);
   };
 
   const handleSelectTimeSlot = (slotValue: string) => {
     setFormData((prev) => ({ ...prev, timeSlot: slotValue }));
-    setIsTimeSlotOpen(false);
-  };
-
-  const handleDurationSelect = (duration: string) => {
-    setFormData((prev) => ({ ...prev, duration }));
   };
 
   const activeService = SERVICES_DATA.find((s) => s.id === formData.serviceId) || SERVICES_DATA[0];
-  const activePriceObj = activeService.prices.find((p) => p.duration === formData.duration) || activeService.prices[0];
-  const activeTimeSlotObj = TIME_SLOT_OPTIONS.find((t) => t.value === formData.timeSlot) || TIME_SLOT_OPTIONS[1];
+  const activePriceObj = activeService.prices[0];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,12 +133,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
     const priceText = activePriceObj ? `S/ ${activePriceObj.discount}` : 'A coordinar';
 
     const message = 
-`🍃 *RESERVA PRIVADA - ESPACIO ÍNTIMO* 🍃
+`🍃 *SOLICITUD DE RESERVA - ESPACIO ÍNTIMO* 🍃
 
 • *Nombre / Alias:* ${formData.fullName.trim()}
 • *WhatsApp:* ${formData.phone.trim()}
 • *Experiencia:* ${activeService.name} (${activeService.tag})
-• *Duración:* ${formData.duration} (Tarifa: ${priceText})
+• *Duración fija:* ${activePriceObj.duration} (Tarifa: ${priceText})
 • *Fecha tentativa:* ${formData.date || 'Por coordinar'}
 • *Horario:* ${formData.timeSlot}
 ${formData.notes ? `• *Notas:* ${formData.notes.trim()}\n` : ''}
@@ -169,7 +155,10 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
     <div className="zen-booking-box">
       {isSuccess ? (
         <div className="zen-success-box">
-          <h3 className="zen-success-title">Mensaje Preparado</h3>
+          <div className="zen-success-icon-badge">
+            <Check size={28} />
+          </div>
+          <h3 className="zen-success-title">Sesión Preparada</h3>
           <p className="zen-success-desc">
             Te hemos conectado con nuestro canal privado de WhatsApp para confirmar fecha y detalles de acceso en Miraflores.
           </p>
@@ -178,10 +167,11 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
             target="_blank"
             rel="noopener noreferrer"
             className="btn-zen-filled"
+            style={{ width: '100%', maxWidth: '320px', margin: '0 auto' }}
           >
             Abrir WhatsApp Directo
           </a>
-          <div style={{ marginTop: '1.5rem' }}>
+          <div style={{ marginTop: '1.25rem' }}>
             <button
               type="button"
               className="btn-zen-subtle"
@@ -192,59 +182,24 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit}>
-          <div className="zen-form-grid">
-            {/* Nombre o Alias */}
-            <div className="zen-form-group">
-              <label htmlFor="fullName" className="zen-label">
-                <User size={13} className="zen-label-icon" />
-                Nombre o Alias
-              </label>
-              <input
-                type="text"
-                id="fullName"
-                name="fullName"
-                required
-                placeholder="Tu nombre o alias preferido"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="zen-input"
-              />
+        <form onSubmit={handleSubmit} className="zen-booking-form">
+          {/* BLOQUE 1: Experiencia (con duración fija informada) */}
+          <div className="zen-form-step">
+            <div className="zen-step-header">
+              <span className="zen-step-num">1</span>
+              <div>
+                <h4 className="zen-step-title">Experiencia de Masaje</h4>
+                <p className="zen-step-subtitle">Selecciona el tratamiento deseado</p>
+              </div>
             </div>
 
-            {/* WhatsApp */}
-            <div className="zen-form-group">
-              <label htmlFor="phone" className="zen-label">
-                <Phone size={13} className="zen-label-icon" />
-                WhatsApp de Contacto
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                required
-                placeholder="+51 900 000 000"
-                value={formData.phone}
-                onChange={handleChange}
-                className="zen-input"
-              />
-            </div>
-
-            {/* Selector de Experiencia / Masaje - Custom Dropdown */}
-            <div className="zen-form-group full-width" ref={serviceSelectRef}>
-              <label className="zen-label">
-                <Sparkles size={13} className="zen-label-icon" />
-                Experiencia Deseada
-              </label>
-
+            {/* Custom Dropdown */}
+            <div className="zen-form-field" ref={serviceSelectRef}>
               <div className="zen-custom-select-wrapper">
                 <button
                   type="button"
                   className={`zen-custom-select-trigger ${isServiceOpen ? 'is-open' : ''}`}
-                  onClick={() => {
-                    setIsServiceOpen(!isServiceOpen);
-                    setIsTimeSlotOpen(false);
-                  }}
+                  onClick={() => setIsServiceOpen(!isServiceOpen)}
                   aria-haspopup="listbox"
                   aria-expanded={isServiceOpen}
                 >
@@ -259,7 +214,8 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
                   <div className="zen-custom-select-menu" role="listbox">
                     {SERVICES_DATA.map((service) => {
                       const isSelected = service.id === activeService.id;
-                      const minPrice = service.prices[0]?.discount || service.prices[0]?.regular;
+                      const price = service.prices[0]?.discount || service.prices[0]?.regular;
+                      const duration = service.prices[0]?.duration;
 
                       return (
                         <div
@@ -275,8 +231,8 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
                               <span className="zen-option-tag">{service.tag}</span>
                             </div>
                             <div className="zen-option-meta">
-                              <span>{service.prices.map((p) => p.duration).join(' · ')}</span>
-                              <span className="zen-option-price">Desde S/ {minPrice}</span>
+                              <span>Duración: {duration}</span>
+                              <span className="zen-option-price">S/ {price}</span>
                             </div>
                           </div>
 
@@ -293,130 +249,153 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
               </div>
             </div>
 
-            {/* Selector de Duración con Tarjetas de Precios */}
-            <div className="zen-form-group full-width">
-              <label className="zen-label">
-                <Clock size={13} className="zen-label-icon" />
-                Duración & Inversión
-              </label>
-              <div className="zen-durations-grid">
-                {activeService.prices.map((p) => {
-                  const isActive = formData.duration === p.duration;
-                  return (
-                    <button
-                      key={p.duration}
-                      type="button"
-                      className={`zen-duration-card ${isActive ? 'is-active' : ''}`}
-                      onClick={() => handleDurationSelect(p.duration)}
-                    >
-                      <span className="zen-duration-time">{p.duration}</span>
-                      <div className="zen-duration-pricing">
-                        <span className="zen-duration-discount">S/ {p.discount}</span>
-                        {p.regular > p.discount && (
-                          <span className="zen-duration-regular">S/ {p.regular}</span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+            {/* Duración y Precio Informados (Tiempo Fijo por Masaje) */}
+            <div className="zen-fixed-duration-info">
+              <div className="zen-fixed-duration-item">
+                <Clock size={14} className="zen-fixed-icon" />
+                <span className="zen-fixed-label">Tiempo de sesión:</span>
+                <strong className="zen-fixed-value">{activePriceObj.duration}</strong>
               </div>
-            </div>
 
-            {/* Fecha Preferida */}
-            <div className="zen-form-group">
-              <label htmlFor="date" className="zen-label">
-                <Calendar size={13} className="zen-label-icon" />
-                Fecha Tentativa
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                min={new Date().toISOString().split('T')[0]}
-                value={formData.date}
-                onChange={handleChange}
-                className="zen-input"
-              />
-            </div>
-
-            {/* Selector de Horario - Custom Dropdown */}
-            <div className="zen-form-group" ref={timeSelectRef}>
-              <label className="zen-label">
-                <Clock size={13} className="zen-label-icon" />
-                Horario Preferido
-              </label>
-
-              <div className="zen-custom-select-wrapper">
-                <button
-                  type="button"
-                  className={`zen-custom-select-trigger ${isTimeSlotOpen ? 'is-open' : ''}`}
-                  onClick={() => {
-                    setIsTimeSlotOpen(!isTimeSlotOpen);
-                    setIsServiceOpen(false);
-                  }}
-                  aria-haspopup="listbox"
-                  aria-expanded={isTimeSlotOpen}
-                >
-                  <div className="zen-select-trigger-content">
-                    {React.createElement(activeTimeSlotObj.icon, { size: 16, className: 'zen-label-icon' })}
-                    <span className="zen-select-trigger-title">{activeTimeSlotObj.value}</span>
-                  </div>
-                  <ChevronDown size={18} className="zen-select-chevron" />
-                </button>
-
-                {isTimeSlotOpen && (
-                  <div className="zen-custom-select-menu" role="listbox">
-                    {TIME_SLOT_OPTIONS.map((slot) => {
-                      const isSelected = slot.value === formData.timeSlot;
-                      const IconComponent = slot.icon;
-
-                      return (
-                        <div
-                          key={slot.value}
-                          role="option"
-                          aria-selected={isSelected}
-                          className={`zen-select-option ${isSelected ? 'is-selected' : ''}`}
-                          onClick={() => handleSelectTimeSlot(slot.value)}
-                        >
-                          <div className="zen-option-main">
-                            <div className="zen-option-header">
-                              <IconComponent size={15} style={{ color: 'var(--champagne)' }} />
-                              <span className="zen-option-title">{slot.label}</span>
-                              <span className="zen-option-tag">{slot.sub}</span>
-                            </div>
-                          </div>
-
-                          {isSelected && (
-                            <div className="zen-option-check">
-                              <Check size={16} />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+              <div className="zen-fixed-price-item">
+                <span className="zen-fixed-label">Inversión:</span>
+                <strong className="zen-fixed-price">S/ {activePriceObj.discount}</strong>
+                {activePriceObj.regular > activePriceObj.discount && (
+                  <span className="zen-fixed-regular">Regular S/ {activePriceObj.regular}</span>
                 )}
               </div>
-            </div>
-
-            {/* Preferencias / Notas */}
-            <div className="zen-form-group full-width">
-              <label htmlFor="notes" className="zen-label">
-                Preferencia o Zona de Enfoque (Opcional)
-              </label>
-              <textarea
-                id="notes"
-                name="notes"
-                rows={2}
-                placeholder="Contracturas en cuello/espalda baja, nivel de presión preferido..."
-                value={formData.notes}
-                onChange={handleChange}
-                className="zen-textarea"
-              />
             </div>
           </div>
 
-          {/* Tarjeta de Resumen Concierge en Vivo */}
+          {/* BLOQUE 2: Fecha y Turno (Segmented Control táctil) */}
+          <div className="zen-form-step">
+            <div className="zen-step-header">
+              <span className="zen-step-num">2</span>
+              <div>
+                <h4 className="zen-step-title">Fecha & Horario</h4>
+                <p className="zen-step-subtitle">Tu disponibilidad tentativa en Miraflores</p>
+              </div>
+            </div>
+
+            <div className="zen-step-row-2">
+              {/* Fecha */}
+              <div className="zen-form-field">
+                <label htmlFor="date" className="zen-label">
+                  <Calendar size={13} className="zen-label-icon" />
+                  Fecha Tentativa
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  name="date"
+                  min={new Date().toISOString().split('T')[0]}
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="zen-input"
+                />
+              </div>
+
+              {/* Turnos Táctiles */}
+              <div className="zen-form-field">
+                <label className="zen-label">
+                  <Clock size={13} className="zen-label-icon" />
+                  Turno Preferido
+                </label>
+                <div className="zen-timeslot-pills">
+                  {TIME_SLOT_OPTIONS.map((slot) => {
+                    const isSelected = formData.timeSlot === slot.value;
+                    const IconComp = slot.icon;
+                    return (
+                      <button
+                        key={slot.value}
+                        type="button"
+                        className={`zen-slot-pill ${isSelected ? 'is-selected' : ''}`}
+                        onClick={() => handleSelectTimeSlot(slot.value)}
+                      >
+                        <IconComp size={14} className="zen-slot-icon" />
+                        <span className="zen-slot-name">{slot.label}</span>
+                        <span className="zen-slot-hours">{slot.hours}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* BLOQUE 3: Datos de Contacto */}
+          <div className="zen-form-step">
+            <div className="zen-step-header">
+              <span className="zen-step-num">3</span>
+              <div>
+                <h4 className="zen-step-title">Datos de Contacto</h4>
+                <p className="zen-step-subtitle">Atención 100% privada y confidencial</p>
+              </div>
+            </div>
+
+            <div className="zen-step-row-2">
+              <div className="zen-form-field">
+                <label htmlFor="fullName" className="zen-label">
+                  <User size={13} className="zen-label-icon" />
+                  Nombre o Alias
+                </label>
+                <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  required
+                  placeholder="Tu nombre o alias"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  className="zen-input"
+                />
+              </div>
+
+              <div className="zen-form-field">
+                <label htmlFor="phone" className="zen-label">
+                  <Phone size={13} className="zen-label-icon" />
+                  WhatsApp
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  required
+                  placeholder="+51 900 000 000"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="zen-input"
+                />
+              </div>
+            </div>
+
+            {/* Notas opcionales colapsables */}
+            <div className="zen-notes-toggle-box">
+              <button
+                type="button"
+                className="zen-notes-toggle-btn"
+                onClick={() => setShowNotes(!showNotes)}
+              >
+                <span>{showNotes ? '— Ocultar notas' : '+ Agregar preferencias o zonas de tensión (opcional)'}</span>
+              </button>
+
+              {showNotes && (
+                <div className="zen-notes-wrapper">
+                  <textarea
+                    id="notes"
+                    name="notes"
+                    rows={2}
+                    placeholder="Contracturas en cuello/espalda, nivel de presión preferido..."
+                    value={formData.notes}
+                    onChange={handleChange}
+                    className="zen-textarea"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Resumen Concierge & Botón de Enviar */}
           <div className="zen-booking-summary">
             <div className="zen-summary-top">
               <span className="zen-summary-badge">
@@ -429,15 +408,15 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
             </div>
             <div className="zen-summary-details">
               <div className="zen-summary-detail-item">
-                <span>Experiencia:</span>
+                <span>Servicio:</span>
                 <strong>{activeService.name}</strong>
               </div>
               <div className="zen-summary-detail-item">
-                <span>Duración:</span>
-                <strong>{formData.duration}</strong>
+                <span>Duración fija:</span>
+                <strong>{activePriceObj.duration}</strong>
               </div>
               <div className="zen-summary-detail-item">
-                <span>Horario:</span>
+                <span>Turno:</span>
                 <strong>{formData.timeSlot.split(' ')[0]}</strong>
               </div>
               {formData.date && (
@@ -449,27 +428,17 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
             </div>
           </div>
 
-          {/* Botón de Enviar a WhatsApp */}
-          <div style={{ textAlign: 'center', marginTop: '1.8rem' }}>
+          <div className="zen-booking-actions">
             <button 
               type="submit" 
-              className="btn-zen-filled" 
-              style={{ 
-                width: '100%', 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                gap: '0.65rem',
-                fontSize: '0.92rem',
-                letterSpacing: '0.08em'
-              }}
+              className="btn-zen-filled zen-booking-submit-btn"
             >
               <Send size={16} />
-              Solicitar Reserva en WhatsApp
+              Confirmar Reserva en WhatsApp
             </button>
             <p className="zen-booking-discretion">
               <ShieldCheck size={14} style={{ color: 'var(--champagne)' }} />
-              Atención 100% privada bajo reserva previa en Miraflores. Discreción absoluta.
+              Atención 100% privada previa cita en Miraflores. Discreción absoluta.
             </p>
           </div>
         </form>
