@@ -3792,3 +3792,1579 @@ a.zen-footer-contact-item:hover .zen-footer-arrow {
   .cat-card-media { height: 200px; }
   .cat-page-header { padding: 4.5rem 0 2.5rem; }
 }
+
+/* ==========================================================================
+   SISTEMA DE AUTENTICACIÓN DUAL & PANELES ZEN LUXURY
+   ========================================================================== */
+
+/* Navbar Auth Elements */
+.zen-nav-login-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--champagne-border);
+  background: rgba(207, 183, 138, 0.04);
+  transition: var(--transition);
+}
+
+.zen-nav-login-link:hover {
+  background: var(--champagne-dim);
+  border-color: var(--champagne);
+  color: #fff;
+}
+
+.zen-nav-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-pill);
+  transition: var(--transition);
+}
+
+.zen-nav-user-pill.client {
+  background: rgba(207, 183, 138, 0.08);
+  border: 1px solid var(--champagne-border);
+  color: var(--text-primary);
+}
+
+.zen-nav-user-pill.admin {
+  background: rgba(207, 183, 138, 0.15);
+  border: 1px solid var(--champagne);
+  color: var(--champagne-light);
+  font-weight: 500;
+}
+
+.zen-nav-user-pill:hover {
+  background: var(--champagne-dim);
+  transform: translateY(-1px);
+}
+
+.zen-mobile-auth-banner {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 0.5rem;
+}
+
+.zen-mobile-user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--champagne-border);
+}
+
+.user-role-label {
+  display: block;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--champagne);
+}
+
+.user-display-name {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+}
+
+.zen-mobile-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: rgba(207, 183, 138, 0.08);
+  border: 1px solid var(--champagne-border);
+  color: var(--champagne);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   PÁGINA DE LOGIN / REGISTRO
+   ========================================================================== */
+.zen-auth-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.zen-auth-main-container {
+  flex: 1;
+  padding: 7rem 0 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.zen-auth-glow-spotlight {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(207, 183, 138, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.zen-auth-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 580px;
+}
+
+.zen-auth-card {
+  background: rgba(18, 24, 20, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--champagne-border);
+  border-radius: 20px;
+  padding: 2.75rem 2.5rem;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+}
+
+.zen-auth-header {
+  text-align: center;
+  margin-bottom: 1.85rem;
+}
+
+.zen-auth-title {
+  font-size: 2rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+  margin: 0.75rem 0 0.5rem;
+}
+
+.zen-auth-subtitle {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* Dual Role Switcher */
+.zen-role-switcher-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.35rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 1.5rem;
+}
+
+.zen-role-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.zen-role-pill-btn:hover {
+  color: var(--text-primary);
+}
+
+.zen-role-pill-btn.active {
+  background: rgba(207, 183, 138, 0.16);
+  color: var(--champagne);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--champagne-border);
+}
+
+/* Sub-tabs */
+.zen-subtab-container {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 1.75rem;
+}
+
+.zen-subtab-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  padding: 0.5rem 0.25rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+}
+
+.zen-subtab-btn.active {
+  color: var(--champagne);
+  font-weight: 500;
+}
+
+.zen-subtab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--champagne);
+}
+
+/* Alerts */
+.zen-auth-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.15rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.zen-auth-alert.error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+}
+
+.zen-auth-alert.success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  color: #86efac;
+}
+
+/* Form inputs */
+.zen-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.zen-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.zen-input-label {
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.zen-label-with-hint {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zen-input-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.zen-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.zen-input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--champagne);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.zen-auth-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-size: 0.94rem;
+  padding: 0.85rem 1rem 0.85rem 2.85rem;
+  border-radius: 10px;
+  font-family: var(--font-sans);
+  transition: var(--transition);
+}
+
+.zen-auth-input:focus {
+  outline: none;
+  border-color: var(--champagne);
+  box-shadow: 0 0 0 2px rgba(207, 183, 138, 0.15);
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.zen-auth-input.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zen-input-action-btn {
+  position: absolute;
+  right: 0.95rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.zen-input-action-btn:hover {
+  color: var(--champagne);
+}
+
+.zen-auth-submit-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  margin-top: 0.5rem;
+}
+
+/* Demo Credentials Card */
+.zen-demo-credentials-card {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px dashed var(--champagne-border);
+  border-radius: 12px;
+}
+
+.zen-demo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--champagne);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.zen-demo-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.85rem;
+  line-height: 1.4;
+}
+
+.zen-demo-buttons-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.zen-demo-pill-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  padding: 0.6rem 0.65rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+
+.zen-demo-pill-btn:hover {
+  background: rgba(207, 183, 138, 0.1);
+  border-color: var(--champagne-border);
+  color: var(--text-primary);
+}
+
+.zen-demo-pill-btn.gold {
+  border-color: rgba(207, 183, 138, 0.25);
+  color: var(--champagne-light);
+}
+
+.zen-auth-footer-privacy {
+  margin-top: 1.75rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1.25rem;
+}
+
+.zen-auth-footer-privacy p {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.zen-back-home-link {
+  font-size: 0.8rem;
+  color: var(--champagne);
+  letter-spacing: 0.04em;
+}
+
+.zen-back-home-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   PORTAL DE CLIENTE: MI CUENTA
+   ========================================================================== */
+.zen-account-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+}
+
+.zen-account-main {
+  flex: 1;
+  padding: 6.5rem 0 5rem;
+}
+
+.zen-account-container {
+  max-width: 1050px;
+}
+
+.zen-account-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.25rem;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.zen-account-name {
+  font-size: 2.25rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  margin-top: 0.4rem;
+}
+
+.zen-account-subtext {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.zen-account-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.zen-logout-btn {
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.zen-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: #f87171 !important;
+}
+
+/* Luxury VIP Digital Card */
+.zen-vip-card-section {
+  margin-bottom: 2.5rem;
+}
+
+.zen-vip-card {
+  position: relative;
+  background: linear-gradient(135deg, #18221b 0%, #0d1310 100%);
+  border: 1px solid var(--champagne-border);
+  border-radius: 20px;
+  padding: 2.25rem 2.5rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  max-width: 520px;
+}
+
+.zen-vip-card-glow {
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(207, 183, 138, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.zen-vip-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.zen-vip-card-brand .brand-word {
+  display: block;
+  font-family: var(--font-serif);
+  letter-spacing: 0.16em;
+  font-size: 1.15rem;
+  color: var(--champagne-light);
+  font-weight: 600;
+}
+
+.zen-vip-card-brand .brand-sub {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  color: var(--champagne);
+  text-transform: uppercase;
+}
+
+.zen-vip-chip {
+  width: 44px;
+  height: 32px;
+  background: linear-gradient(135deg, #d4af37 0%, #aa820a 100%);
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 4px;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.4);
+}
+
+.chip-line {
+  height: 1px;
+  background: rgba(0,0,0,0.3);
+}
+
+.zen-vip-card-code {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  letter-spacing: 0.2em;
+  color: var(--champagne-light);
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.zen-vip-card-footer {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1.5fr;
+  gap: 1rem;
+  border-top: 1px solid rgba(207, 183, 138, 0.15);
+  padding-top: 1rem;
+}
+
+.vip-meta-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--champagne);
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.vip-meta-val {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.vip-meta-tier {
+  font-size: 0.88rem;
+  color: var(--champagne-light);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Tabs */
+.zen-account-tabs {
+  display: flex;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.zen-acc-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.zen-acc-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.zen-acc-tab-btn.active {
+  background: rgba(207, 183, 138, 0.12);
+  color: var(--champagne);
+  border: 1px solid var(--champagne-border);
+}
+
+/* Tab Panels */
+.zen-tab-panel {
+  background: rgba(18, 24, 20, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 2.25rem;
+}
+
+.zen-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.zen-panel-title {
+  font-size: 1.45rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.zen-panel-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Bookings Cards Grid */
+.zen-booking-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.zen-booking-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(207, 183, 138, 0.18);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+
+.zen-booking-card:hover {
+  border-color: var(--champagne);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.zen-booking-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.zen-booking-ref {
+  font-size: 0.74rem;
+  letter-spacing: 0.1em;
+  color: var(--champagne);
+  font-family: var(--font-serif);
+  display: block;
+}
+
+.zen-booking-tag {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.zen-booking-service-name {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.zen-booking-meta-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.zen-booking-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zen-booking-meta-item.therapist {
+  color: var(--champagne-light);
+}
+
+.zen-booking-notes-preview {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.zen-booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1rem;
+}
+
+.zen-booking-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: var(--transition);
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+}
+
+.zen-booking-action-btn.voucher {
+  border-color: var(--champagne-border);
+  color: var(--champagne);
+}
+
+.zen-booking-action-btn.voucher:hover {
+  background: var(--champagne-dim);
+}
+
+.zen-booking-action-btn.wa {
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.zen-booking-action-btn.wa:hover {
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.zen-booking-action-btn.cancel {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.zen-booking-action-btn.cancel:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+/* Status Badges */
+.zen-status-badge {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+}
+
+.zen-status-badge.confirmed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.zen-status-badge.pending {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.zen-status-badge.completed {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.zen-status-badge.cancelled {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Preferences Tab */
+.zen-preferences-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.zen-pref-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.zen-pref-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zen-pref-box.full-width {
+  grid-column: 1 / -1;
+}
+
+.zen-pref-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.zen-pref-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.zen-pref-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--champagne-border);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  margin-top: 0.5rem;
+}
+
+.zen-pressure-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.zen-pressure-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.zen-pressure-btn.active {
+  background: rgba(207, 183, 138, 0.2);
+  border-color: var(--champagne);
+  color: var(--champagne-light);
+  font-weight: 600;
+}
+
+.zen-pref-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 0.85rem;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  resize: vertical;
+}
+
+.zen-pref-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Voucher Modal */
+.zen-voucher-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.zen-voucher-modal {
+  background: #111713;
+  border: 1px solid var(--champagne);
+  border-radius: 18px;
+  max-width: 520px;
+  width: 100%;
+  padding: 2.25rem;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.zen-voucher-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.zen-voucher-header {
+  text-align: center;
+  border-bottom: 1px solid var(--champagne-border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.zen-voucher-brand {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--champagne);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.zen-voucher-header h2 {
+  font-size: 1.35rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+}
+
+.zen-voucher-id {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.zen-voucher-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.zen-voucher-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+}
+
+.zen-voucher-row .v-label {
+  color: var(--text-muted);
+}
+
+.zen-voucher-row .v-val {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.zen-voucher-row.highlight {
+  border-bottom: none;
+  padding-top: 0.75rem;
+  font-size: 1.05rem;
+}
+
+.zen-voucher-protocol {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1.5rem;
+}
+
+.zen-voucher-protocol h4 {
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  margin-bottom: 0.5rem;
+}
+
+.zen-voucher-protocol ul {
+  padding-left: 1.15rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.zen-voucher-footer {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* ==========================================================================
+   PANEL DE ADMINISTRACIÓN: CONSERJERÍA
+   ========================================================================== */
+.zen-admin-page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-main);
+}
+
+.zen-admin-main {
+  flex: 1;
+  padding: 6.5rem 0 5rem;
+}
+
+.zen-admin-container {
+  max-width: 1200px;
+}
+
+.zen-admin-top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.zen-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--champagne);
+  background: rgba(207, 183, 138, 0.1);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--champagne-border);
+  margin-bottom: 0.5rem;
+}
+
+.zen-admin-title {
+  font-size: 2.2rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+}
+
+.zen-admin-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.zen-admin-header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* KPIs Grid */
+.zen-admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+
+.zen-kpi-card {
+  background: rgba(18, 24, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.zen-kpi-card.highlight {
+  border-color: rgba(234, 179, 8, 0.35);
+  background: rgba(234, 179, 8, 0.04);
+}
+
+.zen-kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.zen-kpi-title {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.zen-kpi-value {
+  font-size: 2.2rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.zen-kpi-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* Admin Tabs */
+.zen-admin-tabs {
+  display: flex;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.75rem;
+}
+
+.zen-admin-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+  transition: var(--transition);
+}
+
+.zen-admin-tab-btn.active {
+  background: rgba(207, 183, 138, 0.12);
+  color: var(--champagne);
+  border: 1px solid var(--champagne-border);
+}
+
+/* Toolbar: Search & Filters */
+.zen-admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.zen-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 280px;
+  max-width: 480px;
+}
+
+.zen-search-icon {
+  position: absolute;
+  left: 0.95rem;
+  color: var(--champagne);
+  opacity: 0.7;
+}
+
+.zen-search-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 0.75rem 4rem 0.75rem 2.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-family: var(--font-sans);
+}
+
+.zen-search-input:focus {
+  outline: none;
+  border-color: var(--champagne);
+}
+
+.zen-clear-search-btn {
+  position: absolute;
+  right: 0.85rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.zen-status-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.zen-filter-chip {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.zen-filter-chip.active {
+  background: var(--champagne-dim);
+  border-color: var(--champagne);
+  color: var(--champagne-light);
+}
+
+/* Admin Bookings List */
+.zen-admin-bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zen-admin-booking-row {
+  background: rgba(18, 24, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 2fr 1.8fr 1.5fr 1.5fr;
+  gap: 1.5rem;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.zen-admin-booking-row:hover {
+  border-color: rgba(207, 183, 138, 0.35);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+.booking-head-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.4rem;
+}
+
+.booking-ref-id {
+  font-size: 0.72rem;
+  font-family: var(--font-serif);
+  color: var(--champagne);
+  letter-spacing: 0.08em;
+  background: rgba(207, 183, 138, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.booking-date-stamp {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.booking-client-name {
+  font-size: 1.15rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.booking-contact-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.contact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.contact-pill.wa {
+  color: #86efac;
+}
+
+.contact-pill.email {
+  color: var(--text-muted);
+}
+
+.booking-client-notes {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.row-col-label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--champagne);
+  text-transform: uppercase;
+  margin-bottom: 0.35rem;
+}
+
+.service-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.service-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.zen-admin-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.zen-status-select-badge {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.zen-status-select-badge.pendiente {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.zen-status-select-badge.confirmada {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.zen-status-select-badge.completada {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.zen-status-select-badge.cancelada {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.quick-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.btn-zen-wa-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #86efac;
+  font-size: 0.75rem;
+  padding: 0.45rem;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+
+.btn-zen-wa-action:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.btn-zen-quick-confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(207, 183, 138, 0.15);
+  border: 1px solid var(--champagne);
+  color: var(--champagne);
+  font-size: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-zen-quick-confirm:hover {
+  background: var(--champagne);
+  color: #000;
+}
+
+/* Rooms & Therapists Tab */
+.zen-rooms-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.zen-room-card {
+  background: rgba(18, 24, 20, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1.75rem;
+}
+
+.zen-room-card.active {
+  border-color: var(--champagne-border);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+}
+
+.room-header h3 {
+  font-size: 1.1rem;
+  font-family: var(--font-serif);
+  color: var(--text-primary);
+}
+
+.room-status-badge {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-pill);
+}
+
+.room-status-badge.available {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.room-status-badge.booked {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+}
+
+.room-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.room-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.75rem;
+  color: var(--text-muted);
+}
+
+.room-meta strong {
+  color: var(--champagne);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .zen-admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .zen-admin-booking-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .zen-rooms-grid {
+    grid-template-columns: 1fr;
+  }
+  .zen-vip-card-footer {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .zen-admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .zen-pref-grid {
+    grid-template-columns: 1fr;
+  }
+  .zen-pressure-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .zen-auth-card {
+    padding: 2rem 1.25rem;
+  }
+}
+

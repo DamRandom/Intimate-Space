@@ -2,11 +2,23 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, ArrowRight, MessageCircle, Clock, Sparkles } from 'lucide-react';
+import { 
+  Menu, 
+  X, 
+  ArrowRight, 
+  MessageCircle, 
+  Clock, 
+  Sparkles, 
+  User, 
+  Crown, 
+  LogIn 
+} from 'lucide-react';
 import { BRAND_CONFIG } from '@/data/brand';
+import { useAuth } from '@/context/AuthContext';
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -52,8 +64,29 @@ export const Navbar: React.FC = () => {
           ))}
         </nav>
 
-        {/* Desktop CTA */}
+        {/* Desktop Actions (Auth & Reserve) */}
         <div className="zen-nav-reserve">
+          {user ? (
+            user.role === 'admin' ? (
+              <Link href="/admin" className="zen-nav-user-pill admin">
+                <Crown size={15} className="text-champagne" />
+                <span>Panel Concierge</span>
+              </Link>
+            ) : (
+              <Link href="/mi-cuenta" className="zen-nav-user-pill client">
+                <User size={15} className="text-champagne" />
+                <span className="zen-nav-user-name">
+                  {user.name.split(' ')[0]} (VIP)
+                </span>
+              </Link>
+            )
+          ) : (
+            <Link href="/login" className="zen-nav-login-link">
+              <LogIn size={15} />
+              <span>Acceso Socios</span>
+            </Link>
+          )}
+
           <Link href="/#reservas" className="btn-zen">
             Reservar Cita
           </Link>
@@ -96,6 +129,36 @@ export const Navbar: React.FC = () => {
               >
                 <X size={22} />
               </button>
+            </div>
+
+            {/* Mobile Auth Banner */}
+            <div className="zen-mobile-auth-banner">
+              {user ? (
+                user.role === 'admin' ? (
+                  <Link href="/admin" className="zen-mobile-user-card" onClick={handleLinkClick}>
+                    <Crown size={20} className="text-champagne" />
+                    <div>
+                      <span className="user-role-label">Conserjería Central</span>
+                      <strong className="user-display-name">{user.name}</strong>
+                    </div>
+                    <ArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <Link href="/mi-cuenta" className="zen-mobile-user-card" onClick={handleLinkClick}>
+                    <User size={20} className="text-champagne" />
+                    <div>
+                      <span className="user-role-label">Socio Exclusivo ({user.memberCode})</span>
+                      <strong className="user-display-name">{user.name}</strong>
+                    </div>
+                    <ArrowRight size={16} />
+                  </Link>
+                )
+              ) : (
+                <Link href="/login" className="zen-mobile-login-btn" onClick={handleLinkClick}>
+                  <LogIn size={18} />
+                  <span>Acceso de Socios & Conserjería</span>
+                </Link>
+              )}
             </div>
 
             {/* Navigation items */}

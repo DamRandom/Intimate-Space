@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SERVICES_DATA } from '@/data/services';
 import { BRAND_CONFIG } from '@/data/brand';
 import { BookingFormData, Service } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import Link from 'next/link';
 import { 
   ChevronDown, 
   Check, 
@@ -53,6 +55,8 @@ const TIME_SLOT_OPTIONS: TimeSlotOption[] = [
 ];
 
 export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload }) => {
+  const { user, createBooking } = useAuth();
+
   const [formData, setFormData] = useState<BookingFormData>({
     fullName: '',
     phone: '',
@@ -68,6 +72,17 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
   const [showNotes, setShowNotes] = useState(false);
 
   const serviceSelectRef = useRef<HTMLDivElement>(null);
+
+  // Auto-fill logged in user info if available
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.name,
+        phone: prev.phone || user.phone
+      }));
+    }
+  }, [user]);
 
   // Close dropdown on outside click or escape
   useEffect(() => {
@@ -132,6 +147,26 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
 
     const priceText = activePriceObj ? `S/ ${activePriceObj.discount}` : 'A coordinar';
 
+    // Register booking in global storage for user & concierge
+    try {
+      createBooking({
+        userId: user?.id,
+        userName: formData.fullName.trim(),
+        userPhone: formData.phone.trim(),
+        userEmail: user?.email,
+        serviceId: activeService.id,
+        serviceName: activeService.name,
+        serviceTag: activeService.tag,
+        duration: activePriceObj.duration,
+        price: priceText,
+        date: formData.date || 'Por coordinar',
+        timeSlot: formData.timeSlot,
+        notes: formData.notes.trim()
+      });
+    } catch (err) {
+      console.error('Error saving booking to state:', err);
+    }
+
     const message = 
 `🍃 *SOLICITUD DE RESERVA - ESPACIO ÍNTIMO* 🍃
 
@@ -150,6 +185,7 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
     setIsSuccess(true);
     window.open(waUrl, '_blank');
   };
+
 
   return (
     <div className="zen-booking-box">
@@ -171,6 +207,19 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
           >
             Abrir WhatsApp Directo
           </a>
+
+          {user && (
+            <div style={{ marginTop: '0.85rem' }}>
+              <Link
+                href="/mi-cuenta"
+                className="btn-zen-outline"
+                style={{ width: '100%', maxWidth: '320px', margin: '0 auto', display: 'inline-flex', justifyContent: 'center' }}
+              >
+                Ver esta cita en Mi Espacio Privado
+              </Link>
+            </div>
+          )}
+
           <div style={{ marginTop: '1.25rem' }}>
             <button
               type="button"
@@ -181,6 +230,7 @@ _Miraflores, Lima • Atención 100% privada con previa coordinación._`;
             </button>
           </div>
         </div>
+
       ) : (
         <form onSubmit={handleSubmit} className="zen-booking-form">
           {/* BLOQUE 1: Experiencia (con duración fija informada) */}
