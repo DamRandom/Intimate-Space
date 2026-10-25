@@ -8,13 +8,13 @@ interface BookingSectionProps {
 
 export const BookingSection: React.FC<BookingSectionProps> = ({ selectedServicePreload }) => {
   return (
-    <section id="reservas" className="section-zen">
-      <div className="container">
-        <div className="text-center">
+    <section id="reservas" className="section-zen zen-booking-section">
+      <div className="container relative z-10">
+        <div className="text-center zen-booking-header">
           <span className="section-label">Reserva Privada</span>
           <h2 className="section-heading">Coordina tu Sesión</h2>
           <p className="section-subtext">
-            Para garantizar la calma y discreción de cada huésped, atendemos únicamente con cita programada.
+            Para garantizar la calma y discreción de cada huésped, atendemos exclusivamente con cita programada en Miraflores.
           </p>
         </div>
 
@@ -23,3 +23,4 @@ export const BookingSection: React.FC<BookingSectionProps> = ({ selectedServiceP
     </section>
   );
 };
+

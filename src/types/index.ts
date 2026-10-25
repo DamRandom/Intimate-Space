@@ -1,9 +1,8 @@
-export type ServiceCategory = 'all' | 'terapeutico' | 'relajacion' | 'energetico' | 'deportivo' | 'sensorial';
+﻿export type ServiceCategory = 'all' | 'terapeutico' | 'relajacion' | 'energetico' | 'deportivo' | 'sensorial';
 
 export interface PriceOption {
   duration: string;
-  regular: number;
-  discount: number;
+  price: number;
 }
 
 export interface Service {
@@ -42,4 +41,5 @@ export interface BookingFormData {
 }
 
 export * from './auth';
+
 

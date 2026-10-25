@@ -1,37 +1,37 @@
-import { Service } from '@/types';
+﻿import { Service } from '@/types';
 
 export const SERVICES_DATA: Service[] = [
   {
     id: 'relajante',
     name: 'Masaje Relajante',
     category: 'relajacion',
-    tag: 'Relajación',
-    description: 'Diseñado para disminuir el estrés y alcanzar una relajación profunda mediante movimientos suaves y fluidos que favorecen la circulación.',
+    tag: 'RelajaciÃ³n',
+    description: 'DiseÃ±ado para disminuir el estrÃ©s y alcanzar una relajaciÃ³n profunda mediante movimientos suaves y fluidos que favorecen la circulaciÃ³n.',
     image: '/relajante.jpeg',
     prices: [
-      { duration: '60 min', regular: 155, discount: 125 },
+      { duration: '60 min', price: 155 },
     ],
   },
   {
     id: 'descontracturante',
     name: 'Masaje Descontracturante',
     category: 'terapeutico',
-    tag: 'Terapéutico',
-    description: 'Libera la tensión muscular y alivia contracturas acumuladas con técnicas enfocadas en las zonas de mayor rigidez para mejorar la movilidad.',
+    tag: 'TerapÃ©utico',
+    description: 'Libera la tensiÃ³n muscular y alivia contracturas acumuladas con tÃ©cnicas enfocadas en las zonas de mayor rigidez para mejorar la movilidad.',
     image: '/descontracturante.jpeg',
     prices: [
-      { duration: '60 min', regular: 160, discount: 130 },
+      { duration: '60 min', price: 160 },
     ],
   },
   {
     id: 'descarga-muscular',
     name: 'Descarga Muscular',
     category: 'terapeutico',
-    tag: 'Terapéutico',
-    description: 'Tratamiento integral que libera la tensión muscular mientras promueve una profunda relajación y el equilibrio del cuerpo.',
+    tag: 'TerapÃ©utico',
+    description: 'Tratamiento integral que libera la tensiÃ³n muscular mientras promueve una profunda relajaciÃ³n y el equilibrio del cuerpo.',
     image: '/muscular.jpeg',
     prices: [
-      { duration: '60 min', regular: 210, discount: 170 },
+      { duration: '60 min', price: 210 },
     ],
   },
   {
@@ -39,10 +39,10 @@ export const SERVICES_DATA: Service[] = [
     name: 'Relajante Piedras Calientes',
     category: 'relajacion',
     tag: 'Termoterapia',
-    description: 'Combina técnicas de masaje tradicional con el uso de piedras volcánicas calientes para promover la relajación muscular profunda.',
+    description: 'Combina tÃ©cnicas de masaje tradicional con el uso de piedras volcÃ¡nicas calientes para promover la relajaciÃ³n muscular profunda.',
     image: '/piedras.jpeg',
     prices: [
-      { duration: '70 min', regular: 200, discount: 160 },
+      { duration: '70 min', price: 200 },
     ],
   },
   {
@@ -50,10 +50,10 @@ export const SERVICES_DATA: Service[] = [
     name: 'Masaje Relajante Especial',
     category: 'relajacion',
     tag: 'Premium',
-    description: 'Tratamiento exclusivo y personalizado que combina diversas técnicas con un enfoque holístico para ofrecer relajación total.',
+    description: 'Tratamiento exclusivo y personalizado que combina diversas tÃ©cnicas con un enfoque holÃ­stico para ofrecer relajaciÃ³n total.',
     image: '/relajante_especial.jpeg',
     prices: [
-      { duration: '60 min', regular: 290, discount: 230 },
+      { duration: '60 min', price: 290 },
     ],
   },
   {
@@ -61,11 +61,11 @@ export const SERVICES_DATA: Service[] = [
     name: 'Masaje Deportivo',
     category: 'deportivo',
     tag: 'Deportivo',
-    description: 'Orientado a personas activas o con dolores musculares, utiliza técnicas enfocadas en zonas específicas para acelerar la recuperación.',
+    description: 'Orientado a personas activas o con dolores musculares, utiliza tÃ©cnicas enfocadas en zonas especÃ­ficas para acelerar la recuperaciÃ³n.',
     image: '/deportivo.jpeg',
     prices: [
-      { duration: '30 min', regular: 150, discount: 120 },
-      { duration: '60 min', regular: 260, discount: 210 },
+      { duration: '30 min', price: 150 },
+      { duration: '60 min', price: 260 },
     ],
   },
   {
@@ -73,43 +73,43 @@ export const SERVICES_DATA: Service[] = [
     name: 'Masaje Reductor',
     category: 'terapeutico',
     tag: 'Modelador',
-    description: 'Técnica manual para disminuir medidas, moldear la figura (abdomen, cintura, piernas, brazos) y favorecer la circulación y el drenaje linfático.',
+    description: 'TÃ©cnica manual para disminuir medidas, moldear la figura (abdomen, cintura, piernas, brazos) y favorecer la circulaciÃ³n y el drenaje linfÃ¡tico.',
     image: '/reductor.jpeg',
     prices: [
-      { duration: '45 min', regular: 190, discount: 150 },
+      { duration: '45 min', price: 190 },
     ],
   },
   {
     id: 'tantrico',
-    name: 'Tántrico Relajante',
+    name: 'TÃ¡ntrico Relajante',
     category: 'sensorial',
     tag: 'Sensorial',
-    description: 'Combina técnicas de relajación profunda con una experiencia sensorial diseñada para aliviar tensiones y desconectar de la rutina.',
+    description: 'Combina tÃ©cnicas de relajaciÃ³n profunda con una experiencia sensorial diseÃ±ada para aliviar tensiones y desconectar de la rutina.',
     image: '/tantrico.jpeg',
     prices: [
-      { duration: '60 min', regular: 275, discount: 220 },
+      { duration: '60 min', price: 275 },
     ],
   },
   {
     id: 'intimo-sensorial',
-    name: 'Masaje Íntimo Sensorial',
+    name: 'Masaje Ãntimo Sensorial',
     category: 'sensorial',
-    tag: 'Íntimo',
-    description: 'Experiencia sensorial enfocada en el placer y la relajación con movimientos suaves y envolventes. Incluye desnudo integral interactivo, masaje cuerpo a cuerpo y estimulación manual.',
+    tag: 'Ãntimo',
+    description: 'Experiencia sensorial enfocada en el placer y la relajaciÃ³n con movimientos suaves y envolventes. Incluye desnudo integral interactivo, masaje cuerpo a cuerpo y estimulaciÃ³n manual.',
     image: '/relajacion.jpeg',
     prices: [
-      { duration: '60 min', regular: 310, discount: 250 },
+      { duration: '60 min', price: 310 },
     ],
   },
   {
     id: 'intimo-4manos',
-    name: 'Masaje Íntimo Sensorial (A 4 Manos)',
+    name: 'Masaje Ãntimo Sensorial (A 4 Manos)',
     category: 'sensorial',
-    tag: 'Íntimo · 4 Manos',
-    description: 'Dos terapeutas trabajan de forma sincronizada para ofrecer una experiencia envolvente y potenciar las sensaciones de relajación.',
+    tag: 'Ãntimo Â· 4 Manos',
+    description: 'Dos terapeutas trabajan de forma sincronizada para ofrecer una experiencia envolvente y potenciar las sensaciones de relajaciÃ³n.',
     image: '/intimo4manos.jpeg',
     prices: [
-      { duration: '60 min', regular: 500, discount: 450 },
+      { duration: '60 min', price: 500 },
     ],
   },
   {
@@ -117,12 +117,13 @@ export const SERVICES_DATA: Service[] = [
     name: 'Programas Personalizados',
     category: 'relajacion',
     tag: 'Personalizable',
-    description: 'Programas de Relajación (Reflexología, Lomi Lomi, Piedras Calientes, Craneofacial o Tailandés; combinables hasta 2) y Programa Terapéutico (Descontracturante, Descarga Muscular, Deep Tissue, TENS, Ventosas, Pistola de Percusión o Punción Seca).',
+    description: 'Programas de RelajaciÃ³n (ReflexologÃ­a, Lomi Lomi, Piedras Calientes, Craneofacial o TailandÃ©s; combinables hasta 2) y Programa TerapÃ©utico (Descontracturante, Descarga Muscular, Deep Tissue, TENS, Ventosas, Pistola de PercusiÃ³n o PunciÃ³n Seca).',
     image: '/terapeutico.jpeg',
     prices: [
-      { duration: '45 min', regular: 175, discount: 140 },
-      { duration: '60 min', regular: 210, discount: 170 },
-      { duration: '90 min', regular: 260, discount: 210 },
+      { duration: '45 min', price: 175 },
+      { duration: '60 min', price: 210 },
+      { duration: '90 min', price: 260 },
     ],
   },
 ];
+

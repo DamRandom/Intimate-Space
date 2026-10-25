@@ -3,376 +3,276 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  User, 
-  ShieldCheck, 
-  Lock, 
-  Mail, 
-  Phone, 
-  ArrowRight, 
-  Sparkles, 
-  Crown, 
-  CheckCircle2, 
-  AlertCircle,
-  Eye,
-  EyeOff
-} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { UserRole } from '@/types';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, login, register } = useAuth();
 
-  // Mode: client or admin
-  const defaultRole = (searchParams.get('role') as UserRole) === 'admin' ? 'admin' : 'client';
-  const [selectedRole, setSelectedRole] = useState<UserRole>(defaultRole);
+  const initialMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
+  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
 
-  // Submode for client: 'login' | 'register'
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-
-  // Form states
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // Status feedback
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [phone, setPhone] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
-  // Redirect if already logged in
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
+
   useEffect(() => {
     if (user) {
-      if (user.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/mi-cuenta');
-      }
+      router.push(user.role === 'admin' ? '/admin' : '/mi-cuenta');
     }
   }, [user, router]);
 
-  const handleRoleChange = (role: UserRole) => {
-    setSelectedRole(role);
+  const switchMode = (next: 'login' | 'register') => {
+    setMode(next);
     setErrorMsg(null);
     setSuccessMsg(null);
-    if (role === 'admin') {
-      setAuthMode('login');
-      setEmail('');
-      setPassword('');
-    }
   };
 
-  const fillDemoClient = () => {
-    setSelectedRole('client');
-    setAuthMode('login');
-    setEmail('cliente@espaciointimo.pe');
+  const fillDemo = () => {
+    setMode('login');
+    setIdentifier('sebastian_v');
     setPassword('cliente123');
     setErrorMsg(null);
   };
 
-  const fillDemoAdmin = () => {
-    setSelectedRole('admin');
-    setAuthMode('login');
-    setEmail('admin@espaciointimo.pe');
-    setPassword('admin123');
-    setErrorMsg(null);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
     setIsSubmitting(true);
-
     try {
-      if (selectedRole === 'client' && authMode === 'register') {
-        const res = register(name, email, phone, password);
-        if (!res.success) {
-          setErrorMsg(res.error || 'Ocurrió un error al registrar la cuenta.');
-          setIsSubmitting(false);
-          return;
-        }
-        setSuccessMsg('¡Bienvenido a Espacio Íntimo! Creando tu credencial de socio...');
-        setTimeout(() => {
-          router.push('/mi-cuenta');
-        }, 1000);
-      } else {
-        const res = login(email, password, selectedRole);
-        if (!res.success) {
-          setErrorMsg(res.error || 'Credenciales no válidas.');
-          setIsSubmitting(false);
-          return;
-        }
-        setSuccessMsg('Acceso verificado. Redirigiendo a tu espacio privado...');
-        setTimeout(() => {
-          if (selectedRole === 'admin') {
-            router.push('/admin');
-          } else {
-            router.push('/mi-cuenta');
-          }
-        }, 800);
+      const res = login(identifier.trim(), password);
+      if (!res.success) {
+        setErrorMsg(res.error || 'Credenciales no validas.');
+        setIsSubmitting(false);
+        return;
       }
+      setSuccessMsg('Acceso verificado. Redirigiendo...');
+      setTimeout(() => router.push('/mi-cuenta'), 700);
     } catch {
-      setErrorMsg('Error de conexión o validación. Intenta nuevamente.');
+      setErrorMsg('Error de conexion. Intenta nuevamente.');
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setIsSubmitting(true);
+    try {
+      const res = register(name, lastName, username, phone, regPassword);
+      if (!res.success) {
+        setErrorMsg(res.error || 'Ocurrio un error al crear la cuenta.');
+        setIsSubmitting(false);
+        return;
+      }
+      setSuccessMsg('Cuenta creada. Redirigiendo...');
+      setTimeout(() => router.push('/mi-cuenta'), 800);
+    } catch {
+      setErrorMsg('Error de validacion. Intenta nuevamente.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="zen-auth-page-wrapper">
-      <Navbar />
+    <div className="lux-auth-wrapper">
+      <div className="lux-orb lux-orb-1" aria-hidden="true" />
+      <div className="lux-orb lux-orb-2" aria-hidden="true" />
+      <div className="lux-orb lux-orb-3" aria-hidden="true" />
+      <div className="lux-auth-veil" aria-hidden="true" />
 
-      <main className="zen-auth-main-container">
-        {/* Subtle decorative glow */}
-        <div className="zen-auth-glow-spotlight" />
+      <main className="lux-auth-main">
+        <div className={`lux-auth-card ${mounted ? 'is-visible' : ''}`}>
+          <div className="lux-card-shine" aria-hidden="true" />
 
-        <div className="container zen-auth-inner">
-          <div className="zen-auth-card">
-            {/* Header info */}
-            <div className="zen-auth-header">
-              <span className="zen-badge-pill">
-                <Sparkles size={13} className="text-champagne" />
-                Acceso Exclusivo & Confidencial
-              </span>
-              <h1 className="zen-auth-title">
-                {selectedRole === 'client' ? 'Espacio de Socios' : 'Conserjería Central'}
-              </h1>
-              <p className="zen-auth-subtitle">
-                {selectedRole === 'client'
-                  ? 'Gestiona tus reservas privadas, preferencias botánicas y citas exclusivas en Miraflores.'
-                  : 'Panel confidencial para terapeutas y administración de citas de alta gama.'}
-              </p>
-            </div>
+          <div className="lux-auth-brand">
+            <Link href="/" className="lux-brand-link">
+              <span className="lux-brand-name">Espacio Intimo</span>
+              <span className="lux-brand-sub">Miraflores · Lima</span>
+            </Link>
+          </div>
 
-            {/* Role Dual Switcher */}
-            <div className="zen-role-switcher-container">
-              <button
-                type="button"
-                onClick={() => handleRoleChange('client')}
-                className={`zen-role-pill-btn ${selectedRole === 'client' ? 'active' : ''}`}
-                aria-pressed={selectedRole === 'client'}
-              >
-                <User size={16} />
-                <span>Socio / Huésped</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRoleChange('admin')}
-                className={`zen-role-pill-btn ${selectedRole === 'admin' ? 'active' : ''}`}
-                aria-pressed={selectedRole === 'admin'}
-              >
-                <Crown size={16} />
-                <span>Conserjería & Admin</span>
-              </button>
-            </div>
+          <div className="lux-mode-tabs" role="tablist">
+            <button type="button" role="tab" aria-selected={mode === 'login'}
+              onClick={() => switchMode('login')}
+              className={`lux-mode-tab ${mode === 'login' ? 'active' : ''}`}>
+              Iniciar sesion
+            </button>
+            <button type="button" role="tab" aria-selected={mode === 'register'}
+              onClick={() => switchMode('register')}
+              className={`lux-mode-tab ${mode === 'register' ? 'active' : ''}`}>
+              Crear cuenta
+            </button>
+          </div>
 
-            {/* Sub-tabs for Client: Login vs Register */}
-            {selectedRole === 'client' && (
-              <div className="zen-subtab-container">
-                <button
-                  type="button"
-                  onClick={() => { setAuthMode('login'); setErrorMsg(null); }}
-                  className={`zen-subtab-btn ${authMode === 'login' ? 'active' : ''}`}
-                >
-                  Iniciar Sesión
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setAuthMode('register'); setErrorMsg(null); }}
-                  className={`zen-subtab-btn ${authMode === 'register' ? 'active' : ''}`}
-                >
-                  Registrarme como Socio
-                </button>
+          <div className="lux-auth-header">
+            <p className="lux-auth-eyebrow">Acceso Privado</p>
+            <h1 className="lux-auth-title">
+              {mode === 'login' ? 'Bienvenido de vuelta' : 'Unete al club'}
+            </h1>
+            <p className="lux-auth-desc">
+              {mode === 'login'
+                ? 'Ingresa con tu usuario y contrasena.'
+                : 'Crea tu cuenta para gestionar citas y preferencias.'}
+            </p>
+          </div>
+
+          {errorMsg && (
+            <div className="lux-auth-feedback lux-feedback-error" role="alert">{errorMsg}</div>
+          )}
+          {successMsg && (
+            <div className="lux-auth-feedback lux-feedback-success" role="status">{successMsg}</div>
+          )}
+
+          {mode === 'login' && (
+            <form onSubmit={handleLogin} className="lux-auth-form" noValidate>
+              <div className="lux-field">
+                <label htmlFor="login-identifier" className="lux-field-label">Usuario</label>
+                <input
+                  id="login-identifier"
+                  type="text"
+                  required
+                  placeholder="nombre de usuario"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className="lux-input"
+                  autoComplete="username"
+                  autoCapitalize="none"
+                />
               </div>
-            )}
+              <div className="lux-field">
+                <label htmlFor="login-password" className="lux-field-label">Contrasena</label>
 
-            {/* Notification messages */}
-            {errorMsg && (
-              <div className="zen-auth-alert error">
-                <AlertCircle size={18} />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {successMsg && (
-              <div className="zen-auth-alert success">
-                <CheckCircle2 size={18} />
-                <span>{successMsg}</span>
-              </div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="zen-auth-form">
-              {/* If registering client, ask for Name and Phone */}
-              {selectedRole === 'client' && authMode === 'register' && (
-                <>
-                  <div className="zen-input-group">
-                    <label htmlFor="auth-name" className="zen-input-label">
-                      Nombre Completo o Alias de Confianza
-                    </label>
-                    <div className="zen-input-wrapper">
-                      <User size={18} className="zen-input-icon" />
-                      <input
-                        id="auth-name"
-                        type="text"
-                        required
-                        placeholder="Ej: Sebastián Valdivia"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="zen-auth-input"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="zen-input-group">
-                    <label htmlFor="auth-phone" className="zen-input-label">
-                      WhatsApp / Móvil (Para confirmación privada)
-                    </label>
-                    <div className="zen-input-wrapper">
-                      <Phone size={18} className="zen-input-icon" />
-                      <input
-                        id="auth-phone"
-                        type="tel"
-                        required
-                        placeholder="+51 987 654 321"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="zen-auth-input"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {/* Email */}
-              <div className="zen-input-group">
-                <label htmlFor="auth-email" className="zen-input-label">
-                  {selectedRole === 'admin' ? 'Correo Administrativo' : 'Correo Electrónico'}
-                </label>
-                <div className="zen-input-wrapper">
-                  <Mail size={18} className="zen-input-icon" />
+                <div className="lux-input-wrap">
                   <input
-                    id="auth-email"
-                    type="email"
-                    required
-                    placeholder={
-                      selectedRole === 'admin' ? 'admin@espaciointimo.pe' : 'tu-correo@ejemplo.com'
-                    }
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="zen-auth-input"
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="zen-input-group">
-                <div className="zen-label-with-hint">
-                  <label htmlFor="auth-password" className="zen-input-label">
-                    Contraseña
-                  </label>
-                  {selectedRole === 'client' && authMode === 'login' && (
-                    <span className="zen-input-hint">Mínimo 6 caracteres</span>
-                  )}
-                </div>
-                <div className="zen-input-wrapper">
-                  <Lock size={18} className="zen-input-icon" />
-                  <input
-                    id="auth-password"
+                    id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     required
-                    placeholder="••••••••"
+                    placeholder="contrasena"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="zen-auth-input"
+                    className="lux-input lux-input-password"
+                    autoComplete="current-password"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="zen-input-action-btn"
-                    aria-label="Ver u ocultar contraseña"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}
+                    className="lux-toggle-pw"
+                    aria-label={showPassword ? 'Ocultar contrasena' : 'Ver contrasena'}>
+                    {showPassword ? 'Ocultar' : 'Ver'}
                   </button>
                 </div>
               </div>
-
-              {/* Submit button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn-zen-filled zen-auth-submit-btn"
-              >
-                <span>
-                  {isSubmitting
-                    ? 'Procesando...'
-                    : selectedRole === 'admin'
-                    ? 'Acceder a Conserjería'
-                    : authMode === 'register'
-                    ? 'Crear Cuenta Exclusiva'
-                    : 'Ingresar a mi Espacio'}
+              <button type="submit" disabled={isSubmitting} className="lux-submit-btn">
+                <span className="lux-submit-text">
+                  {isSubmitting ? 'Verificando...' : 'Ingresar'}
                 </span>
-                <ArrowRight size={18} />
+                <span className="lux-submit-shimmer" aria-hidden="true" />
               </button>
             </form>
+          )}
 
-            {/* Quick Demo Access Bar */}
-            <div className="zen-demo-credentials-card">
-              <div className="zen-demo-header">
-                <ShieldCheck size={16} className="text-champagne" />
-                <span>Acceso Rápido de Prueba (1-Click Demo)</span>
+          {mode === 'register' && (
+            <form onSubmit={handleRegister} className="lux-auth-form" noValidate>
+              <div className="lux-two-col">
+                <div className="lux-field">
+                  <label htmlFor="reg-name" className="lux-field-label">Nombre</label>
+                  <input id="reg-name" type="text" required placeholder="nombre"
+                    value={name} onChange={(e) => setName(e.target.value)}
+                    className="lux-input" autoComplete="given-name" />
+                </div>
+                <div className="lux-field">
+                  <label htmlFor="reg-lastname" className="lux-field-label">Apellido</label>
+                  <input id="reg-lastname" type="text" required placeholder="apellido"
+                    value={lastName} onChange={(e) => setLastName(e.target.value)}
+                    className="lux-input" autoComplete="family-name" />
+                </div>
               </div>
-              <p className="zen-demo-desc">
-                Explora el sistema con las cuentas preconfiguradas con datos de muestra:
-              </p>
-              <div className="zen-demo-buttons-row">
-                <button
-                  type="button"
-                  onClick={fillDemoClient}
-                  className="zen-demo-pill-btn"
-                >
-                  <User size={14} />
-                  <span>Cargar Cliente Demo (Sebastián)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={fillDemoAdmin}
-                  className="zen-demo-pill-btn gold"
-                >
-                  <Crown size={14} />
-                  <span>Cargar Admin Demo (Concierge)</span>
+              <div className="lux-field">
+                <label htmlFor="reg-username" className="lux-field-label">Usuario</label>
+                <div className="lux-input-prefix-wrap">
+                  <span className="lux-input-prefix" aria-hidden="true">@</span>
+                  <input id="reg-username" type="text" required
+                    placeholder="usuario"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                    className="lux-input lux-input-prefixed"
+                    autoComplete="username" autoCapitalize="none" maxLength={30} />
+                </div>
+                <span className="lux-field-hint-below">
+                  Solo letras, numeros y guion bajo. Minimo 3 caracteres.
+                </span>
+              </div>
+              <div className="lux-field">
+                <label htmlFor="reg-phone" className="lux-field-label">Telefono</label>
+                <input id="reg-phone" type="tel" required placeholder="numero de telefono"
+                  value={phone} onChange={(e) => setPhone(e.target.value)}
+                  className="lux-input" autoComplete="tel" />
+              </div>
+              <div className="lux-field">
+                <div className="lux-field-row">
+                  <label htmlFor="reg-password" className="lux-field-label">Contrasena</label>
+                  <span className="lux-field-hint">Minimo 6 caracteres</span>
+                </div>
+                <div className="lux-input-wrap">
+                  <input id="reg-password"
+                    type={showRegPassword ? 'text' : 'password'}
+                    required placeholder="contrasena"
+                    value={regPassword} onChange={(e) => setRegPassword(e.target.value)}
+                    className="lux-input lux-input-password" autoComplete="new-password" />
+                  <button type="button" onClick={() => setShowRegPassword(!showRegPassword)}
+                    className="lux-toggle-pw"
+                    aria-label={showRegPassword ? 'Ocultar contrasena' : 'Ver contrasena'}>
+                    {showRegPassword ? 'Ocultar' : 'Ver'}
+                  </button>
+                </div>
+              </div>
+              <button type="submit" disabled={isSubmitting} className="lux-submit-btn">
+                <span className="lux-submit-text">
+                  {isSubmitting ? 'Creando cuenta...' : 'Crear mi cuenta'}
+                </span>
+                <span className="lux-submit-shimmer" aria-hidden="true" />
+              </button>
+            </form>
+          )}
+
+          {mode === 'login' && (
+            <div className="lux-demo-access">
+              <span className="lux-demo-label">Acceso rapido de prueba</span>
+              <div className="lux-demo-row">
+                <button type="button" onClick={fillDemo} className="lux-demo-btn">
+                  Socio · Sebastian
                 </button>
               </div>
             </div>
+          )}
 
-            {/* Footer note */}
-            <div className="zen-auth-footer-privacy">
-              <p>
-                Al acceder aceptas nuestras políticas de máxima discreción, confidencialidad y
-                reserva protegida en Miraflores, Lima.
-              </p>
-              <Link href="/" className="zen-back-home-link">
-                ← Volver a la portada principal
-              </Link>
-            </div>
+          <div className="lux-auth-footer">
+            <Link href="/" className="lux-return-link">Volver al inicio</Link>
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="zen-loading-screen">Cargando acceso seguro...</div>}>
+    <Suspense fallback={<div className="lux-loading-screen">Cargando acceso seguro...</div>}>
       <LoginContent />
     </Suspense>
   );

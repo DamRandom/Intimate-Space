@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   UserProfile, 
-  UserRole, 
   UserBooking, 
   UserPreferences, 
   BookingStatus 
@@ -13,8 +12,8 @@ interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   bookings: UserBooking[];
-  login: (email: string, password: string, role: UserRole) => { success: boolean; error?: string };
-  register: (name: string, email: string, phone: string, password: string) => { success: boolean; error?: string };
+  login: (identifier: string, password: string) => { success: boolean; error?: string };
+  register: (name: string, lastName: string, username: string, phone: string, password: string) => { success: boolean; error?: string };
   logout: () => void;
   updateProfile: (data: Partial<UserProfile>) => void;
   updatePreferences: (preferences: UserPreferences) => void;
@@ -32,7 +31,9 @@ const STORAGE_KEY_BOOKINGS_DB = 'espacio_intimo_all_bookings';
 const SEED_USERS: (UserProfile & { password: string })[] = [
   {
     id: 'user-admin-1',
-    name: 'Concierge Espacio Íntimo',
+    name: 'Concierge',
+    lastName: 'Espacio Íntimo',
+    username: 'admin_ei',
     email: 'admin@espaciointimo.pe',
     phone: '+51 984 416 350',
     role: 'admin',
@@ -49,9 +50,11 @@ const SEED_USERS: (UserProfile & { password: string })[] = [
   },
   {
     id: 'user-client-1',
-    name: 'Sebastián Valdivia',
+    name: 'Sebastián',
+    lastName: 'Valdivia',
+    username: 'sebastian_v',
     email: 'cliente@espaciointimo.pe',
-    phone: '+51 987 654 321',
+    phone: '+51987654321',
     role: 'client',
     membershipTier: 'vip',
     memberCode: 'EI-VIP-842',
@@ -185,34 +188,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Login handler
-  const login = (email: string, password: string, role: UserRole) => {
-    const cleanEmail = email.trim().toLowerCase();
+  // Login handler — accepts username + password only
+  const login = (identifier: string, password: string) => {
+    const cleanIdentifier = identifier.trim().toLowerCase();
     const cleanPass = password.trim();
 
     const users = getRegisteredUsers();
-    const found = users.find(u => u.email.toLowerCase() === cleanEmail);
+    const found = users.find(u => u.username?.toLowerCase() === cleanIdentifier);
 
     if (!found) {
-      return { 
-        success: false, 
-        error: 'No encontramos una cuenta registrada con este correo electrónico.' 
+      return {
+        success: false,
+        error: 'No encontramos una cuenta con este usuario.'
       };
     }
 
     if (found.password !== cleanPass) {
-      return { 
-        success: false, 
-        error: 'La contraseña ingresada no es correcta.' 
-      };
-    }
-
-    if (found.role !== role) {
       return {
         success: false,
-        error: role === 'admin'
-          ? 'Esta cuenta no cuenta con credenciales de Administrador.'
-          : 'Esta cuenta es de Administrador. Por favor ingresa desde la pestaña de Conserjería & Admin.'
+        error: 'La contraseña ingresada no es correcta.'
       };
     }
 
@@ -222,15 +216,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  // Register handler (creates client)
-  const register = (name: string, email: string, phone: string, password: string) => {
+  // Register handler — creates client account
+  const register = (name: string, lastName: string, username: string, phone: string, password: string) => {
     const cleanName = name.trim();
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanPhone = phone.trim();
+    const cleanLastName = lastName.trim();
+    const cleanUsername = username.trim().toLowerCase();
+    const cleanPhone = phone.trim().replace(/\D/g, '');
     const cleanPass = password.trim();
 
-    if (!cleanName || !cleanEmail || !cleanPhone || !cleanPass) {
+    if (!cleanName || !cleanLastName || !cleanUsername || !cleanPhone || !cleanPass) {
       return { success: false, error: 'Por favor completa todos los campos requeridos.' };
+    }
+
+    if (cleanUsername.length < 3) {
+      return { success: false, error: 'El nombre de usuario debe tener al menos 3 caracteres.' };
+    }
+
+    if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
+      return { success: false, error: 'El usuario solo puede contener letras, números y guión bajo.' };
+    }
+
+    if (cleanPhone.length < 7) {
+      return { success: false, error: 'Ingresa un número de teléfono válido.' };
     }
 
     if (cleanPass.length < 6) {
@@ -238,19 +245,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const users = getRegisteredUsers();
-    if (users.some(u => u.email.toLowerCase() === cleanEmail)) {
-      return { success: false, error: 'Ya existe una cuenta con este correo electrónico.' };
+
+    if (users.some(u => u.username?.toLowerCase() === cleanUsername)) {
+      return { success: false, error: 'Este nombre de usuario ya está en uso. Elige otro.' };
     }
 
-    // Generate unique member code
+    if (users.some(u => u.phone.replace(/\D/g, '').endsWith(cleanPhone) && cleanPhone.length >= 7)) {
+      return { success: false, error: 'Ya existe una cuenta con este número de teléfono.' };
+    }
+
     const randomNum = Math.floor(100 + Math.random() * 900);
     const newMemberCode = `EI-VIP-${randomNum}`;
 
     const newUser: UserProfile & { password: string } = {
       id: `user-client-${Date.now()}`,
       name: cleanName,
-      email: cleanEmail,
-      phone: cleanPhone,
+      lastName: cleanLastName,
+      username: cleanUsername,
+      phone: `+${cleanPhone}`,
       role: 'client',
       membershipTier: 'vip',
       memberCode: newMemberCode,
@@ -348,7 +360,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user.role === 'admin') return bookings;
     return bookings.filter(b => 
       b.userId === user.id || 
-      (b.userEmail && b.userEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (b.userEmail && user.email && b.userEmail.toLowerCase() === user.email.toLowerCase()) ||
       (b.userPhone && user.phone && b.userPhone.includes(user.phone.replace(/\D/g, '').slice(-7)))
     );
   };

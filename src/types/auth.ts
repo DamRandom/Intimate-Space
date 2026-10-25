@@ -14,7 +14,9 @@ export interface UserPreferences {
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
+  lastName: string;
+  username: string;
+  email?: string;
   phone: string;
   role: UserRole;
   membershipTier: MembershipTier;
