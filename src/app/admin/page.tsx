@@ -98,8 +98,8 @@ export default function AdminDashboardPage() {
       return acc + num;
     }, 0);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push('/login');
   };
 

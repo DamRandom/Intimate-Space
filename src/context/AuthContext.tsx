@@ -5,71 +5,31 @@ import {
   UserProfile, 
   UserBooking, 
   UserPreferences, 
-  BookingStatus 
+  BookingStatus,
+  UserRole,
+  MembershipTier
 } from '@/types';
+import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   bookings: UserBooking[];
-  login: (identifier: string, password: string) => { success: boolean; error?: string };
-  register: (name: string, lastName: string, username: string, phone: string, password: string) => { success: boolean; error?: string };
-  logout: () => void;
-  updateProfile: (data: Partial<UserProfile>) => void;
-  updatePreferences: (preferences: UserPreferences) => void;
+  login: (identifier: string, password: string) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
+  register: (name: string, lastName: string, username: string, phone: string, password: string, email?: string) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
+  logout: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void> | void;
+  updatePreferences: (preferences: UserPreferences) => Promise<void> | void;
   createBooking: (booking: Omit<UserBooking, 'id' | 'createdAt' | 'status'>) => UserBooking;
   updateBookingStatus: (id: string, status: BookingStatus, therapist?: string) => void;
   cancelBooking: (id: string) => void;
   getUserBookings: () => UserBooking[];
 }
 
-const STORAGE_KEY_USER = 'espacio_intimo_current_user';
-const STORAGE_KEY_USERS_DB = 'espacio_intimo_registered_users';
 const STORAGE_KEY_BOOKINGS_DB = 'espacio_intimo_all_bookings';
 
-// Seed demo users
-const SEED_USERS: (UserProfile & { password: string })[] = [
-  {
-    id: 'user-admin-1',
-    name: 'Concierge',
-    lastName: 'Espacio Íntimo',
-    username: 'admin_ei',
-    email: 'admin@espaciointimo.pe',
-    phone: '+51 984 416 350',
-    role: 'admin',
-    membershipTier: 'black_label',
-    memberCode: 'EI-ADM-001',
-    createdAt: '2025-01-01',
-    password: 'admin123',
-    preferences: {
-      aroma: 'Sándalo Oriental & Ámbar',
-      pressure: 'firme',
-      beverage: 'Espresso Ristretto',
-      notes: 'Administrador central de conserjería'
-    }
-  },
-  {
-    id: 'user-client-1',
-    name: 'Sebastián',
-    lastName: 'Valdivia',
-    username: 'sebastian_v',
-    email: 'cliente@espaciointimo.pe',
-    phone: '+51987654321',
-    role: 'client',
-    membershipTier: 'vip',
-    memberCode: 'EI-VIP-842',
-    createdAt: '2025-02-14',
-    password: 'cliente123',
-    preferences: {
-      aroma: 'Eucalipto & Cedro Silvestre',
-      pressure: 'profunda',
-      beverage: 'Infusión de Menta Andina',
-      notes: 'Foco de tensión en trapecios y lumbares. Prefiere música ambiental con frecuencias 432Hz.'
-    }
-  }
-];
-
-// Seed demo bookings
+// Seed demo bookings for mock business data (no plain-text passwords or mock users)
 const SEED_BOOKINGS: UserBooking[] = [
   {
     id: 'EI-RES-1049',
@@ -126,6 +86,54 @@ const SEED_BOOKINGS: UserBooking[] = [
   }
 ];
 
+// Helper to safely map a Supabase User to the internal UserProfile
+function mapSupabaseUserToProfile(supabaseUser: SupabaseUser): UserProfile {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const meta = (supabaseUser.user_metadata || {}) as Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const appMeta = (supabaseUser.app_metadata || {}) as Record<string, any>;
+
+  // CRITICAL SECURITY RULE: The admin role must NEVER be derived from client-editable
+  // user_metadata, email, username or localStorage. It is strictly validated against
+  // server-managed claims in app_metadata.
+  const role: UserRole =
+    appMeta.role === 'admin' || appMeta.claims_admin === true
+      ? 'admin'
+      : 'client';
+
+  const tier: MembershipTier =
+    meta.membershipTier === 'black_label'
+      ? 'black_label'
+      : meta.membershipTier === 'vip'
+      ? 'vip'
+      : 'standard';
+
+  const rawName = meta.name || meta.full_name || supabaseUser.email?.split('@')[0] || 'Socio';
+  const lastName = meta.lastName || meta.last_name || '';
+  const username = meta.username || supabaseUser.email?.split('@')[0] || 'socio';
+  const phone = meta.phone || supabaseUser.phone || '';
+  const memberCode = meta.memberCode || `EI-${supabaseUser.id.substring(0, 6).toUpperCase()}`;
+
+  return {
+    id: supabaseUser.id,
+    name: rawName,
+    lastName,
+    username,
+    email: supabaseUser.email || '',
+    phone,
+    role,
+    membershipTier: tier,
+    memberCode,
+    preferences: meta.preferences || {
+      aroma: 'Eucalipto & Cedro Silvestre',
+      pressure: 'firme',
+      beverage: 'Infusión de Menta Andina',
+      notes: ''
+    },
+    createdAt: supabaseUser.created_at || new Date().toISOString()
+  };
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -133,17 +141,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [bookings, setBookings] = useState<UserBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize from storage or seed
+  // Initialize session from Supabase Auth and subscribe to state changes
   useEffect(() => {
+    let isMounted = true;
+    const supabase = createClient();
+
+    // Clean up any legacy mock credentials from localStorage to avoid storing passwords
     try {
       if (typeof window !== 'undefined') {
-        // Users DB
-        const storedUsers = localStorage.getItem(STORAGE_KEY_USERS_DB);
-        if (!storedUsers) {
-          localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(SEED_USERS));
-        }
+        localStorage.removeItem('espacio_intimo_registered_users');
+        localStorage.removeItem('espacio_intimo_current_user');
 
-        // Bookings DB
+        // Bookings store initialization
         const storedBookings = localStorage.getItem(STORAGE_KEY_BOOKINGS_DB);
         if (!storedBookings) {
           localStorage.setItem(STORAGE_KEY_BOOKINGS_DB, JSON.stringify(SEED_BOOKINGS));
@@ -151,78 +160,116 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setBookings(JSON.parse(storedBookings));
         }
-
-        // Current session
-        const activeUser = localStorage.getItem(STORAGE_KEY_USER);
-        if (activeUser) {
-          setUser(JSON.parse(activeUser));
-        }
       }
-    } catch (error) {
-      console.error('Error loading auth from storage:', error);
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      console.warn('Error reading mock bookings store:', e);
     }
+
+    // 1. Fetch initial real session
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (!isMounted) return;
+      if (error) {
+        console.error('Error fetching Supabase session:', error);
+      }
+      if (session?.user) {
+        setUser(mapSupabaseUserToProfile(session.user));
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    // 2. Synchronize authentication state
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      if (session?.user) {
+        setUser(mapSupabaseUserToProfile(session.user));
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Save current user to storage helper
-  const persistSession = (profile: UserProfile | null) => {
-    setUser(profile);
-    if (typeof window !== 'undefined') {
-      if (profile) {
-        localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(profile));
+  // Supabase login handler
+  const login = async (
+    identifier: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
+    const raw = identifier.trim();
+    const cleanPass = password.trim();
+
+    if (!raw) {
+      return { success: false, error: 'Por favor ingresa tu correo electrónico o usuario.' };
+    }
+    if (!cleanPass) {
+      return { success: false, error: 'Por favor ingresa tu contraseña.' };
+    }
+
+    // Resolve target email for Supabase Auth
+    let emailToUse = raw;
+    if (!raw.includes('@')) {
+      if (raw.toLowerCase() === 'sebastian_v') {
+        emailToUse = 'cliente@espaciointimo.pe';
+      } else if (raw.toLowerCase() === 'admin_ei') {
+        emailToUse = 'admin@espaciointimo.pe';
       } else {
-        localStorage.removeItem(STORAGE_KEY_USER);
+        emailToUse = `${raw.toLowerCase().replace(/^@/, '')}@espaciointimo.pe`;
       }
     }
-  };
 
-  // Helper to fetch registered users
-  const getRegisteredUsers = (): (UserProfile & { password: string })[] => {
-    if (typeof window === 'undefined') return SEED_USERS;
     try {
-      const stored = localStorage.getItem(STORAGE_KEY_USERS_DB);
-      return stored ? JSON.parse(stored) : SEED_USERS;
-    } catch {
-      return SEED_USERS;
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailToUse,
+        password: cleanPass
+      });
+
+      if (error) {
+        let friendlyError = error.message;
+        if (error.message.includes('Invalid login credentials')) {
+          friendlyError = 'Credenciales no válidas. Verifica tu correo y contraseña.';
+        } else if (error.message.includes('Email not confirmed')) {
+          friendlyError = 'Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada.';
+        }
+        return { success: false, error: friendlyError };
+      }
+
+      if (!data.user) {
+        return { success: false, error: 'No se pudo obtener la sesión de usuario.' };
+      }
+
+      const profile = mapSupabaseUserToProfile(data.user);
+      setUser(profile);
+      return { success: true, user: profile };
+    } catch (err) {
+      console.error('Error during Supabase login:', err);
+      return { success: false, error: 'Error de conexión con el servicio de autenticación.' };
     }
   };
 
-  // Login handler — accepts username + password only
-  const login = (identifier: string, password: string) => {
-    const cleanIdentifier = identifier.trim().toLowerCase();
-    const cleanPass = password.trim();
-
-    const users = getRegisteredUsers();
-    const found = users.find(u => u.username?.toLowerCase() === cleanIdentifier);
-
-    if (!found) {
-      return {
-        success: false,
-        error: 'No encontramos una cuenta con este usuario.'
-      };
-    }
-
-    if (found.password !== cleanPass) {
-      return {
-        success: false,
-        error: 'La contraseña ingresada no es correcta.'
-      };
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _, ...userProfile } = found;
-    persistSession(userProfile);
-    return { success: true };
-  };
-
-  // Register handler — creates client account
-  const register = (name: string, lastName: string, username: string, phone: string, password: string) => {
+  // Supabase register handler
+  const register = async (
+    name: string,
+    lastName: string,
+    username: string,
+    phone: string,
+    password: string,
+    email?: string
+  ): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
     const cleanName = name.trim();
     const cleanLastName = lastName.trim();
-    const cleanUsername = username.trim().toLowerCase();
+    const cleanUsername = username.trim().toLowerCase().replace(/^@/, '');
     const cleanPhone = phone.trim().replace(/\D/g, '');
     const cleanPass = password.trim();
+    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : `${cleanUsername}@espaciointimo.pe`;
 
     if (!cleanName || !cleanLastName || !cleanUsername || !cleanPhone || !cleanPass) {
       return { success: false, error: 'Por favor completa todos los campos requeridos.' };
@@ -232,87 +279,108 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'El nombre de usuario debe tener al menos 3 caracteres.' };
     }
 
-    if (!/^[a-z0-9_]+$/.test(cleanUsername)) {
-      return { success: false, error: 'El usuario solo puede contener letras, números y guión bajo.' };
-    }
-
-    if (cleanPhone.length < 7) {
-      return { success: false, error: 'Ingresa un número de teléfono válido.' };
-    }
-
     if (cleanPass.length < 6) {
       return { success: false, error: 'La contraseña debe tener al menos 6 caracteres.' };
-    }
-
-    const users = getRegisteredUsers();
-
-    if (users.some(u => u.username?.toLowerCase() === cleanUsername)) {
-      return { success: false, error: 'Este nombre de usuario ya está en uso. Elige otro.' };
-    }
-
-    if (users.some(u => u.phone.replace(/\D/g, '').endsWith(cleanPhone) && cleanPhone.length >= 7)) {
-      return { success: false, error: 'Ya existe una cuenta con este número de teléfono.' };
     }
 
     const randomNum = Math.floor(100 + Math.random() * 900);
     const newMemberCode = `EI-VIP-${randomNum}`;
 
-    const newUser: UserProfile & { password: string } = {
-      id: `user-client-${Date.now()}`,
-      name: cleanName,
-      lastName: cleanLastName,
-      username: cleanUsername,
-      phone: `+${cleanPhone}`,
-      role: 'client',
-      membershipTier: 'vip',
-      memberCode: newMemberCode,
-      createdAt: new Date().toISOString().split('T')[0],
-      password: cleanPass,
-      preferences: {
-        aroma: 'Eucalipto & Cedro Silvestre',
-        pressure: 'media',
-        beverage: 'Agua alcalina aromatizada',
-        notes: ''
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
+        password: cleanPass,
+        options: {
+          data: {
+            name: cleanName,
+            lastName: cleanLastName,
+            username: cleanUsername,
+            phone: `+${cleanPhone}`,
+            // SECURITY: Never grant admin privileges automatically on registration
+            role: 'client',
+            membershipTier: 'vip',
+            memberCode: newMemberCode
+          }
+        }
+      });
+
+      if (error) {
+        let friendlyError = error.message;
+        if (error.message.includes('User already registered')) {
+          friendlyError = 'Ya existe una cuenta con este correo electrónico.';
+        } else if (error.message.includes('Password should be')) {
+          friendlyError = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+        return { success: false, error: friendlyError };
       }
-    };
 
-    const updatedUsers = [...users, newUser];
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(updatedUsers));
+      if (data.user) {
+        const profile = mapSupabaseUserToProfile(data.user);
+        if (data.session) {
+          setUser(profile);
+        }
+        return { success: true, user: profile };
+      }
+
+      return { success: true };
+    } catch (err) {
+      console.error('Error during Supabase registration:', err);
+      return { success: false, error: 'Error de conexión con el servicio de autenticación.' };
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _, ...userProfile } = newUser;
-    persistSession(userProfile);
-    return { success: true };
   };
 
-  // Logout handler
-  const logout = () => {
-    persistSession(null);
+  // Supabase logout handler
+  const logout = async () => {
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Error signing out:', err);
+    } finally {
+      setUser(null);
+    }
   };
 
-  // Update profile
-  const updateProfile = (data: Partial<UserProfile>) => {
+  // Update profile in Supabase user_metadata
+  const updateProfile = async (data: Partial<UserProfile>) => {
     if (!user) return;
     const updated = { ...user, ...data };
-    persistSession(updated);
+    setUser(updated);
 
-    // Also update in registered users DB
-    const users = getRegisteredUsers();
-    const updatedUsers = users.map(u => u.id === user.id ? { ...u, ...data } : u);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY_USERS_DB, JSON.stringify(updatedUsers));
+    try {
+      const supabase = createClient();
+      await supabase.auth.updateUser({
+        data: {
+          name: updated.name,
+          lastName: updated.lastName,
+          phone: updated.phone
+        }
+      });
+    } catch (err) {
+      console.error('Error updating profile in Supabase:', err);
     }
   };
 
-  // Update preferences
-  const updatePreferences = (preferences: UserPreferences) => {
+  // Update preferences in Supabase user_metadata
+  const updatePreferences = async (preferences: UserPreferences) => {
     if (!user) return;
-    updateProfile({ preferences: { ...user.preferences, ...preferences } });
+    const updated = { ...user, preferences: { ...user.preferences, ...preferences } };
+    setUser(updated);
+
+    try {
+      const supabase = createClient();
+      await supabase.auth.updateUser({
+        data: {
+          preferences: updated.preferences
+        }
+      });
+    } catch (err) {
+      console.error('Error updating preferences in Supabase:', err);
+    }
   };
 
-  // Create booking
+  // Create booking (persisted in mock business store)
   const createBooking = (bookingData: Omit<UserBooking, 'id' | 'createdAt' | 'status'>) => {
     const bookingId = `EI-RES-${Math.floor(1000 + Math.random() * 9000)}`;
     const newBooking: UserBooking = {

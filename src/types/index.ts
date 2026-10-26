@@ -1,8 +1,10 @@
-﻿export type ServiceCategory = 'all' | 'terapeutico' | 'relajacion' | 'energetico' | 'deportivo' | 'sensorial';
+export type ServiceCategory = 'all' | 'terapeutico' | 'relajacion' | 'energetico' | 'deportivo' | 'sensorial';
 
 export interface PriceOption {
   duration: string;
   price: number;
+  regular?: number;
+  discount?: number;
 }
 
 export interface Service {

@@ -37,7 +37,10 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
             {service.prices.map((p, idx) => (
               <li key={idx} className="zen-protocol-item">
                 <span className="zen-step-dot"><Clock size={12} /></span>
-                <span>{p.duration} — Regular S/ {p.regular} · Con desc. S/ {p.discount}</span>
+                <span>
+                  {p.duration} — S/ {p.price ?? p.discount ?? p.regular}
+                  {p.regular && p.discount && p.regular > p.discount ? ` (Regular S/ ${p.regular})` : ''}
+                </span>
               </li>
             ))}
           </ul>

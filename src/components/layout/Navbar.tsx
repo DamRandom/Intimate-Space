@@ -117,7 +117,7 @@ export const Navbar: React.FC = () => {
                 </Link>
               ))}
               <Link
-                href="/login"
+                href={user ? (user.role === 'admin' ? '/admin' : '/mi-cuenta') : '/login'}
                 className="zen-mobile-nav-link"
                 onClick={() => setIsOpen(false)}
               >

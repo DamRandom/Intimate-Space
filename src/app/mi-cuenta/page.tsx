@@ -111,8 +111,8 @@ export default function MiCuentaPage() {
     setTimeout(() => setProfSavedMsg(false), 3000);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push('/');
   };
 

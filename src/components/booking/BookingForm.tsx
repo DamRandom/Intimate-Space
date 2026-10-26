@@ -74,7 +74,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const priceText = activePriceObj ? `S/ ${activePriceObj.discount}` : 'A coordinar';
+    const priceValue = activePriceObj ? (activePriceObj.price ?? activePriceObj.discount ?? activePriceObj.regular) : null;
+    const priceText = priceValue ? `S/ ${priceValue}` : 'A coordinar';
 
     try {
       createBooking({
@@ -85,7 +86,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
         serviceId: activeService.id,
         serviceName: activeService.name,
         serviceTag: activeService.tag,
-        duration: activePriceObj.duration,
+        duration: activePriceObj ? activePriceObj.duration : '60 min',
         price: priceText,
         date: formData.date || 'Por coordinar',
         timeSlot: formData.timeSlot,
@@ -101,7 +102,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ selectedServicePreload
 • Nombre: ${formData.fullName.trim()}
 • WhatsApp: ${formData.phone.trim()}
 • Masaje: ${activeService.name} (${activeService.tag})
-• Duración: ${activePriceObj.duration} — S/ ${activePriceObj.discount}
+• Duración: ${activePriceObj ? activePriceObj.duration : '60 min'} — ${priceText}
 • Fecha tentativa: ${formData.date || 'Por coordinar'}
 • Turno preferido: ${formData.timeSlot}
 ${formData.notes ? `• Comentarios: ${formData.notes.trim()}\n` : ''}
@@ -159,8 +160,9 @@ Miraflores, Lima • Atención privada con cita confirmada.`;
             className="zen-select-fluid"
           >
             {SERVICES_DATA.map((service) => {
-              const price = service.prices[0]?.discount || service.prices[0]?.regular;
-              const duration = service.prices[0]?.duration;
+              const pObj = service.prices[0];
+              const price = pObj ? (pObj.price ?? pObj.discount ?? pObj.regular) : '';
+              const duration = pObj?.duration || '';
               return (
                 <option key={service.id} value={service.id}>
                   {service.name} — {duration} (S/ {price})

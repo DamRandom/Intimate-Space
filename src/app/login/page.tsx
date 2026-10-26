@@ -20,6 +20,7 @@ function LoginContent() {
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [showRegPassword, setShowRegPassword] = useState(false);
@@ -43,49 +44,68 @@ function LoginContent() {
     setSuccessMsg(null);
   };
 
-  const fillDemo = () => {
+  const fillDemoClient = () => {
     setMode('login');
-    setIdentifier('sebastian_v');
+    setIdentifier('cliente@espaciointimo.pe');
     setPassword('cliente123');
     setErrorMsg(null);
+    setSuccessMsg(null);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const fillDemoAdmin = () => {
+    setMode('login');
+    setIdentifier('admin@espaciointimo.pe');
+    setPassword('admin123');
+    setErrorMsg(null);
+    setSuccessMsg(null);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
     setIsSubmitting(true);
     try {
-      const res = login(identifier.trim(), password);
-      if (!res.success) {
-        setErrorMsg(res.error || 'Credenciales no validas.');
+      const res = await login(identifier.trim(), password);
+      if (!res.success || !res.user) {
+        setErrorMsg(res.error || 'Credenciales no válidas.');
         setIsSubmitting(false);
         return;
       }
-      setSuccessMsg('Acceso verificado. Redirigiendo...');
-      setTimeout(() => router.push('/mi-cuenta'), 700);
+      const destination = res.user.role === 'admin' ? '/admin' : '/mi-cuenta';
+      setSuccessMsg(
+        res.user.role === 'admin'
+          ? 'Acceso de Conserjería verificado. Redirigiendo al panel...'
+          : 'Acceso verificado. Redirigiendo a tu espacio privado...'
+      );
+      setTimeout(() => router.push(destination), 600);
     } catch {
-      setErrorMsg('Error de conexion. Intenta nuevamente.');
+      setErrorMsg('Error de conexión con el servicio de autenticación.');
       setIsSubmitting(false);
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
     setIsSubmitting(true);
     try {
-      const res = register(name, lastName, username, phone, regPassword);
+      const res = await register(name, lastName, username, phone, regPassword, email);
       if (!res.success) {
-        setErrorMsg(res.error || 'Ocurrio un error al crear la cuenta.');
+        setErrorMsg(res.error || 'Ocurrió un error al crear la cuenta.');
         setIsSubmitting(false);
         return;
       }
-      setSuccessMsg('Cuenta creada. Redirigiendo...');
-      setTimeout(() => router.push('/mi-cuenta'), 800);
+      if (res.user) {
+        setSuccessMsg('Cuenta creada con éxito. Redirigiendo a tu espacio privado...');
+        setTimeout(() => router.push('/mi-cuenta'), 700);
+      } else {
+        setSuccessMsg('Cuenta creada. Por favor revisa tu correo electrónico para confirmarla antes de iniciar sesión.');
+        setIsSubmitting(false);
+      }
     } catch {
-      setErrorMsg('Error de validacion. Intenta nuevamente.');
+      setErrorMsg('Error al registrar usuario en Supabase.');
       setIsSubmitting(false);
     }
   };
@@ -143,12 +163,14 @@ function LoginContent() {
           {mode === 'login' && (
             <form onSubmit={handleLogin} className="lux-auth-form" noValidate>
               <div className="lux-field">
-                <label htmlFor="login-identifier" className="lux-field-label">Usuario</label>
+                <div className="lux-field-row">
+                  <label htmlFor="login-identifier" className="lux-field-label">Usuario, Teléfono o Correo</label>
+                </div>
                 <input
                   id="login-identifier"
                   type="text"
                   required
-                  placeholder="nombre de usuario"
+                  placeholder="ej: sebastian_v o 987654321"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   className="lux-input"
@@ -157,14 +179,25 @@ function LoginContent() {
                 />
               </div>
               <div className="lux-field">
-                <label htmlFor="login-password" className="lux-field-label">Contrasena</label>
+                <div className="lux-field-row">
+                  <label htmlFor="login-password" className="lux-field-label">Contraseña</label>
+                  <a
+                    href="https://wa.me/51984416350?text=Hola%20Conserjer%C3%ADa%20Espacio%20%C3%8Dntimo%2C%20necesito%20asistencia%20para%20recuperar%20mi%20clave"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lux-field-hint"
+                    style={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
 
                 <div className="lux-input-wrap">
                   <input
                     id="login-password"
                     type={showPassword ? 'text' : 'password'}
                     required
-                    placeholder="contrasena"
+                    placeholder="contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="lux-input lux-input-password"
@@ -172,7 +205,7 @@ function LoginContent() {
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
                     className="lux-toggle-pw"
-                    aria-label={showPassword ? 'Ocultar contrasena' : 'Ver contrasena'}>
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}>
                     {showPassword ? 'Ocultar' : 'Ver'}
                   </button>
                 </div>
@@ -218,6 +251,19 @@ function LoginContent() {
                 </span>
               </div>
               <div className="lux-field">
+                <label htmlFor="reg-email" className="lux-field-label">Correo Electrónico</label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  required
+                  placeholder="correo@ejemplo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="lux-input"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="lux-field">
                 <label htmlFor="reg-phone" className="lux-field-label">Telefono</label>
                 <input id="reg-phone" type="tel" required placeholder="numero de telefono"
                   value={phone} onChange={(e) => setPhone(e.target.value)}
@@ -252,10 +298,13 @@ function LoginContent() {
 
           {mode === 'login' && (
             <div className="lux-demo-access">
-              <span className="lux-demo-label">Acceso rapido de prueba</span>
+              <span className="lux-demo-label">Accesos rápidos de prueba</span>
               <div className="lux-demo-row">
-                <button type="button" onClick={fillDemo} className="lux-demo-btn">
-                  Socio · Sebastian
+                <button type="button" onClick={fillDemoClient} className="lux-demo-btn">
+                  Socio · Sebastián
+                </button>
+                <button type="button" onClick={fillDemoAdmin} className="lux-demo-btn">
+                  Admin · Conserjería
                 </button>
               </div>
             </div>
