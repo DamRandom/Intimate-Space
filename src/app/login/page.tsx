@@ -9,7 +9,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, login, register } = useAuth();
+  const { user, login, register, logout } = useAuth();
 
   const initialMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
@@ -33,30 +33,22 @@ function LoginContent() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Si se solicita logout o llega con ?logout=true, purgar sesión inmediatamente
   useEffect(() => {
-    if (user) {
+    if (searchParams.get('logout') === 'true') {
+      logout();
+    }
+  }, [searchParams, logout]);
+
+  useEffect(() => {
+    const isLogout = searchParams.get('logout') === 'true';
+    if (user && !isLogout) {
       router.push(user.role === 'admin' ? '/admin' : '/mi-cuenta');
     }
-  }, [user, router]);
+  }, [user, router, searchParams]);
 
   const switchMode = (next: 'login' | 'register') => {
     setMode(next);
-    setErrorMsg(null);
-    setSuccessMsg(null);
-  };
-
-  const fillDemoClient = () => {
-    setMode('login');
-    setIdentifier('cliente@espaciointimo.pe');
-    setPassword('cliente123');
-    setErrorMsg(null);
-    setSuccessMsg(null);
-  };
-
-  const fillDemoAdmin = () => {
-    setMode('login');
-    setIdentifier('admin@espaciointimo.pe');
-    setPassword('admin123');
     setErrorMsg(null);
     setSuccessMsg(null);
   };
@@ -309,20 +301,6 @@ function LoginContent() {
                 <span className="lux-submit-shimmer" aria-hidden="true" />
               </button>
             </form>
-          )}
-
-          {mode === 'login' && (
-            <div className="lux-demo-access">
-              <span className="lux-demo-label">Accesos rápidos de prueba</span>
-              <div className="lux-demo-row">
-                <button type="button" onClick={fillDemoClient} className="lux-demo-btn">
-                  Socio · Sebastián
-                </button>
-                <button type="button" onClick={fillDemoAdmin} className="lux-demo-btn">
-                  Admin · Conserjería
-                </button>
-              </div>
-            </div>
           )}
 
           <div className="lux-auth-footer">

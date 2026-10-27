@@ -25,7 +25,12 @@ export const metadata: Metadata = {
     'Espacio Intimo'
   ],
   authors: [{ name: 'Espacio Intimo' }],
-  icons: { icon: '/assets/logo.jpg' },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'ESPACIO INTIMO | Masajes Exclusivos para Hombres en Miraflores',
     description: 'Un espacio donde todo guerrero merece descansar y recargar energias. Atencion 100% privada.',

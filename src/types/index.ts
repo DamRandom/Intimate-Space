@@ -43,5 +43,5 @@ export interface BookingFormData {
 }
 
 export * from './auth';
-
+export * from './admin';
 

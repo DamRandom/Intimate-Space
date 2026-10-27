@@ -45,26 +45,6 @@ export const HeroSection: React.FC = () => {
               <span>Explorar Catálogo</span>
             </Link>
           </div>
-
-          {/* Trust Highlights Strip */}
-          <div className="zen-hero-trust-strip">
-            <span className="zen-trust-text">100% Discreción & Confidencialidad</span>
-            <span className="zen-trust-dot">·</span>
-            <span className="zen-trust-text">Suites con Ducha Privada</span>
-            <span className="zen-trust-dot">·</span>
-            <span className="zen-trust-text">Aromaterapia & Óleos Botánicos</span>
-            <span className="zen-trust-dot">·</span>
-            <span className="zen-trust-text">Miraflores • Previa Cita</span>
-          </div>
-
-          {/* Scroll Down Indicator */}
-          <a href="#filosofia" className="zen-hero-scroll-btn" aria-label="Deslizar a filosofía">
-            <span className="scroll-text">Descubre la Experiencia</span>
-            <div className="scroll-mouse-icon">
-              <div className="scroll-wheel" />
-            </div>
-          </a>
-
         </div>
       </div>
     </section>

@@ -2,7 +2,21 @@ export type UserRole = 'client' | 'admin';
 
 export type MembershipTier = 'standard' | 'vip' | 'black_label';
 
-export type BookingStatus = 'pendiente' | 'confirmada' | 'completada' | 'cancelada';
+/** 7 estados del ciclo de vida de una reserva */
+export type BookingStatus =
+  | 'pendiente'
+  | 'confirmada'
+  | 'pagada'
+  | 'ocurriendo'
+  | 'por_pagar'
+  | 'completada'
+  | 'cancelada';
+
+/** Estados que bloquean edición/eliminación */
+export const LOCKED_STATUSES: BookingStatus[] = ['completada', 'cancelada'];
+
+/** Estados terminales (no pueden cambiar automáticamente) */
+export const TERMINAL_STATUSES: BookingStatus[] = ['completada', 'cancelada'];
 
 export interface UserPreferences {
   aroma?: string;
@@ -26,6 +40,7 @@ export interface UserProfile {
   avatarUrl?: string;
 }
 
+/** Reserva tal como viene de Supabase */
 export interface UserBooking {
   id: string;
   userId?: string;
@@ -36,11 +51,21 @@ export interface UserBooking {
   serviceName: string;
   serviceTag?: string;
   duration: string;
-  price: string;
+  price: string;        // display: "S/ 250"
+  priceValue?: number;  // numérico para cálculos
   date: string;
   timeSlot: string;
+  horaInicio?: string;  // HH:MM
+  horaFin?: string;     // HH:MM
   notes?: string;
   status: BookingStatus;
-  therapist?: string;
+  masajistaId?: string;
+  therapist?: string;   // nombre display del masajista
+  confirmedAt?: string;
+  paidAt?: string;
+  completedAt?: string;
+  cancelledAt?: string;
+  confirmationDeadline?: string;
   createdAt: string;
 }
+

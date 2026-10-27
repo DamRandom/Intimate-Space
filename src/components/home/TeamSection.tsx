@@ -18,13 +18,13 @@ export const TEAM_DATA: TeamMember[] = [
   {
     id: 'carlos',
     name: 'Carlos',
-    experience: '6 años de experiencia',
+    experience: '2 años de experiencia',
     image: '/terapeutas/carlos.jpeg',
   },
   {
-    id: 'glanko',
-    name: 'Glanko',
-    experience: '5 años de experiencia',
+    id: 'gianko',
+    name: 'Gianko',
+    experience: '4 años de experiencia',
     image: '/terapeutas/glanko.jpeg',
   },
   {

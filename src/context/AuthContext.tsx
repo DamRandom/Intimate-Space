@@ -165,29 +165,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Error reading mock bookings store:', e);
     }
 
-    // 1. Fetch initial real session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
+    // 1. Validar sesión real contra el servidor (getUser hace round-trip, evita cache stale)
+    supabase.auth.getUser().then(({ data: { user: sbUser }, error }) => {
       if (!isMounted) return;
-      if (error) {
-        console.error('Error fetching Supabase session:', error);
-      }
-      if (session?.user) {
-        setUser(mapSupabaseUserToProfile(session.user));
-      } else {
+      if (error || !sbUser) {
         setUser(null);
+      } else {
+        setUser(mapSupabaseUserToProfile(sbUser));
       }
       setIsLoading(false);
     });
 
-    // 2. Synchronize authentication state
+    // 2. Sincronizar cambios de autenticación en tiempo real
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) return;
-      if (session?.user) {
-        setUser(mapSupabaseUserToProfile(session.user));
-      } else {
+      // SIGNED_OUT siempre limpia, incluso si hay cache local
+      if (event === 'SIGNED_OUT' || !session?.user) {
         setUser(null);
+      } else {
+        setUser(mapSupabaseUserToProfile(session.user));
       }
       setIsLoading(false);
     });
@@ -330,15 +328,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Supabase logout handler
+  // Supabase logout handler — invalida sesión en servidor y limpia todo cliente
   const logout = async () => {
     try {
       const supabase = createClient();
-      await supabase.auth.signOut();
+      // scope:'global' invalida el refresh token en el servidor — previene re-auth por cookie
+      await supabase.auth.signOut({ scope: 'global' }).catch(() => {});
     } catch (err) {
       console.error('Error signing out:', err);
     } finally {
+      // Limpiar estado local inmediatamente
       setUser(null);
+      if (typeof window !== 'undefined') {
+        try {
+          // Eliminar todos los tokens Supabase del almacenamiento local
+          [...Object.keys(localStorage)].forEach((key) => {
+            if (key.startsWith('sb-') || key.includes('supabase')) {
+              localStorage.removeItem(key);
+            }
+          });
+          [...Object.keys(sessionStorage)].forEach((key) => {
+            if (key.startsWith('sb-') || key.includes('supabase')) {
+              sessionStorage.removeItem(key);
+            }
+          });
+        } catch (e) {
+          console.warn('Error clearing storage on logout', e);
+        }
+        // Limpiar cookies del servidor vía API route y redirigir
+        fetch('/api/auth/logout', { method: 'POST' }).finally(() => {
+          window.location.href = '/';
+        });
+      }
     }
   };
 
