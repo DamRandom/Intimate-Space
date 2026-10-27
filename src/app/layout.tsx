@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 import { BRAND_CONFIG } from '@/data/brand';
 import { AuthProvider } from '@/context/AuthContext';
+import { GlobalPageLoader } from '@/components/ui/GlobalPageLoader';
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -42,7 +44,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body className={montserrat.variable}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <Suspense fallback={null}>
+            <GlobalPageLoader />
+          </Suspense>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

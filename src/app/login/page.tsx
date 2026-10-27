@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 function LoginContent() {
   const router = useRouter();
@@ -211,8 +212,15 @@ function LoginContent() {
                 </div>
               </div>
               <button type="submit" disabled={isSubmitting} className="lux-submit-btn">
-                <span className="lux-submit-text">
-                  {isSubmitting ? 'Verificando...' : 'Ingresar'}
+                <span className="lux-submit-text" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  {isSubmitting ? (
+                    <>
+                      <LoadingSpinner size="xs" />
+                      <span>Verificando...</span>
+                    </>
+                  ) : (
+                    'Ingresar'
+                  )}
                 </span>
                 <span className="lux-submit-shimmer" aria-hidden="true" />
               </button>
@@ -288,8 +296,15 @@ function LoginContent() {
                 </div>
               </div>
               <button type="submit" disabled={isSubmitting} className="lux-submit-btn">
-                <span className="lux-submit-text">
-                  {isSubmitting ? 'Creando cuenta...' : 'Crear mi cuenta'}
+                <span className="lux-submit-text" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  {isSubmitting ? (
+                    <>
+                      <LoadingSpinner size="xs" />
+                      <span>Creando cuenta...</span>
+                    </>
+                  ) : (
+                    'Crear mi cuenta'
+                  )}
                 </span>
                 <span className="lux-submit-shimmer" aria-hidden="true" />
               </button>
@@ -315,13 +330,34 @@ function LoginContent() {
           </div>
         </div>
       </main>
+
+      {/* Luxury Fullscreen Transition Overlay on Successful Login/Register */}
+      {successMsg && (
+        <LoadingSpinner
+          fullScreen
+          size="lg"
+          text="Acceso Autorizado"
+          subtext={successMsg}
+          showLogo
+        />
+      )}
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="lux-loading-screen">Cargando acceso seguro...</div>}>
+    <Suspense
+      fallback={
+        <LoadingSpinner
+          fullScreen
+          size="lg"
+          text="ESPACIO ÍNTIMO"
+          subtext="Cargando acceso seguro..."
+          showLogo
+        />
+      }
+    >
       <LoginContent />
     </Suspense>
   );

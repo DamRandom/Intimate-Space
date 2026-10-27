@@ -27,6 +27,7 @@ import { useAuth } from '@/context/AuthContext';
 import { BookingStatus, UserBooking } from '@/types';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 const THERAPISTS_LIST = [
   'Alejandro R. (Ritual INTI & Terapéutico)',
@@ -57,10 +58,13 @@ export default function AdminDashboardPage() {
 
   if (isLoading || !user || user.role !== 'admin') {
     return (
-      <div className="zen-loading-screen">
-        <Crown className="animate-pulse text-champagne" size={36} />
-        <p>Verificando credenciales de Conserjería...</p>
-      </div>
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text="CONSERJERÍA PRIVADA"
+        subtext="Verificando credenciales de acceso..."
+        showLogo
+      />
     );
   }
 

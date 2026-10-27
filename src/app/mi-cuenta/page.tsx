@@ -27,6 +27,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { BRAND_CONFIG } from '@/data/brand';
 import { UserBooking } from '@/types';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function MiCuentaPage() {
   const router = useRouter();
@@ -80,10 +81,13 @@ export default function MiCuentaPage() {
 
   if (isLoading || !user) {
     return (
-      <div className="zen-loading-screen">
-        <Sparkles className="animate-spin text-champagne" size={32} />
-        <p>Accediendo a tu espacio privado...</p>
-      </div>
+      <LoadingSpinner
+        fullScreen
+        size="lg"
+        text="ESPACIO ÍNTIMO"
+        subtext="Accediendo a tu espacio privado..."
+        showLogo
+      />
     );
   }
 
