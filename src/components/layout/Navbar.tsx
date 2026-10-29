@@ -27,6 +27,9 @@ export const Navbar: React.FC = () => {
     { label: 'Contacto', href: '/#contacto' },
   ];
 
+  // Conmutador para ocultar login/panel temporalmente sin perder el código
+  const SHOW_AUTH_LINKS = false;
+
   return (
     <header className="zen-header">
       <div className="container zen-nav-content">
@@ -47,19 +50,21 @@ export const Navbar: React.FC = () => {
           ))}
         </nav>
 
-        {/* Desktop Actions: Single elegant button + subtle account link */}
+        {/* Desktop Actions: Single elegant button (Login/Cuenta en pausa en la UI) */}
         <div className="zen-nav-actions">
-          {user ? (
-            <Link 
-              href={user.role === 'admin' ? '/admin' : '/mi-cuenta'} 
-              className="zen-nav-subtle-link"
-            >
-              {user.role === 'admin' ? 'Conserjería' : 'Mi Cuenta'}
-            </Link>
-          ) : (
-            <Link href="/login" className="zen-nav-subtle-link">
-              Acceso
-            </Link>
+          {SHOW_AUTH_LINKS && (
+            user ? (
+              <Link 
+                href={user.role === 'admin' ? '/admin' : '/mi-cuenta'} 
+                className="zen-nav-subtle-link"
+              >
+                {user.role === 'admin' ? 'Conserjería' : 'Mi Cuenta'}
+              </Link>
+            ) : (
+              <Link href="/login" className="zen-nav-subtle-link">
+                Acceso
+              </Link>
+            )
           )}
 
           <Link href="/#reservas" className="btn-zen-nav">
@@ -116,13 +121,15 @@ export const Navbar: React.FC = () => {
                   {link.label}
                 </Link>
               ))}
-              <Link
-                href={user ? (user.role === 'admin' ? '/admin' : '/mi-cuenta') : '/login'}
-                className="zen-mobile-nav-link"
-                onClick={() => setIsOpen(false)}
-              >
-                {user ? (user.role === 'admin' ? 'Conserjería Central' : 'Mi Cuenta Privada') : 'Acceso de Socios'}
-              </Link>
+              {SHOW_AUTH_LINKS && (
+                <Link
+                  href={user ? (user.role === 'admin' ? '/admin' : '/mi-cuenta') : '/login'}
+                  className="zen-mobile-nav-link"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {user ? (user.role === 'admin' ? 'Conserjería Central' : 'Mi Cuenta Privada') : 'Acceso de Socios'}
+                </Link>
+              )}
             </nav>
 
             <div className="zen-mobile-drawer-footer">

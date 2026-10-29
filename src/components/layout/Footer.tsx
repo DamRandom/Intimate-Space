@@ -4,7 +4,7 @@ import { BRAND_CONFIG } from '@/data/brand';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="zen-simple-footer">
+    <footer id="contacto" className="zen-simple-footer">
       <div className="container zen-simple-footer-inner">
         {/* Logo */}
         <Link href="/" className="zen-footer-logo-link">
